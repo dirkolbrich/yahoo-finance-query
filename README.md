@@ -10,8 +10,8 @@ As simple as that:
 require 'YahooFinanceQuery.php';
 ```
 
-### Changelog
--------------
+Changelog
+---------
 
-### Recources
--------------
+Recources
+---------
