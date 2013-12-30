@@ -1,13 +1,17 @@
-# YahooFinanceQuery
-
+YahooFinanceQuery
+=================
 A PHP class to query the Yahoo Finance API.
 
-### Implementation
-
+Implementation
+--------------
 As simple as that:
 ```php
-    <?php
-    require 'YahooFinanceQuery.php';
+<?php
+require 'YahooFinanceQuery.php';
 ```
+
 ### Changelog
+-------------
+
 ### Recources
+-------------
