@@ -6,11 +6,9 @@ A PHP class to query the Yahoo Finance API.
 
 As simple as that:
 
-"""php
-
+```php
     <?php
     require 'YahooFinanceQuery.php';
-
-"""
+```
 
 ## Recources
