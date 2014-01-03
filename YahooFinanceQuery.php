@@ -6,7 +6,7 @@
  * @copyright   2013 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
- * @version     0.2.0
+ * @version     0.2.1
  * @package     YahooFinanceQuery
  */
  
@@ -246,6 +246,10 @@ class YahooFinanceQuery
         }
         //select object node
         $data = $object->query->results->quote;
+        //put single object into array to unify $data
+        if (is_object($data)) {
+            $data = array($data);
+        }
         //add UTC timestamp to dataset
         foreach ($data as $dataEntryKey => $dataEntry) {
             //normalize time zones for date and time to UTC
@@ -609,5 +613,5 @@ class YahooFinanceQuery
         }
         echo '</code></pre>';
     }
- 
+
 }
