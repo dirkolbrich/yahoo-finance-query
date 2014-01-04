@@ -1,6 +1,10 @@
 ToDo
 ----
 - [ ] query historical quotes
-- [ ] option return php string or json
-- [ ] option query cURL or fopen
-- [ ] sanitize data entry for `symbolSuggest()`
+- [ ] query indices for symbols
+- [ ] query sectors for industries
+
+Done
+----
+- [X] query current qoute for symbol/s
+- [X] option to return array or raw json
