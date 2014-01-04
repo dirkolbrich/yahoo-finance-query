@@ -15,7 +15,9 @@ namespace YahooFinanceQuery;
 
 class YahooFinanceQuery
 {
-    public $config = array();
+    public $config = array(
+        'returnFormat' => 'string' // 'string' or 'json'
+        );
 
     public function __construct()
     {
@@ -40,6 +42,7 @@ class YahooFinanceQuery
         $json = preg_replace('/.+?({.+}).+/', '$1', $result);   // convert to JSON
         $object = json_decode($json);                           // decode JSON to object
         $data = $object->ResultSet->Result;                     // select data
+
         if ($data) {
             $i = 0;
             foreach($data as $suggest) {
