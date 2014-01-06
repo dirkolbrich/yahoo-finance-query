@@ -141,17 +141,17 @@ $query = new YahooFinanceQuery\YahooFinanceQuery();
         <thead>
             <th>Symbol</th>
             <th>Name</th>
-            <th>Last Price</th>
         </thead>
-        <tbody>
         <?php foreach ($data as $dataEntry) { ?>
+        <tbody>
+            <?php foreach($dataEntry as $component) { ?>
             <tr>
-                <td><?php echo $dataEntry['Symbol']; ?></td>
-                <td><?php echo $dataEntry['Name']; ?></td>
-                <td><?php echo $dataEntry['LastPrice']; ?></td>
+                <td><?php echo $component[0]; ?></td>
+                <td><?php echo $component[1]; ?></td>
             </tr>
-        <?php } ?>
+            <?php } ?>
         </tbody>
+        <?php } ?>
     </table>
     <?php } ?>
 </div>
