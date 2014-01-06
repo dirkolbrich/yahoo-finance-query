@@ -1,10 +1,12 @@
 ToDo
 ----
-- [ ] query historical quotes
-- [ ] query indices for symbols
 - [ ] query sectors for industries
+- [ ] query stock info
+- [ ] unify all request to csv?
 
 Done
 ----
-- [X] query current qoute for symbol/s
-- [X] option to return array or raw json
+- [x] query historical quotes
+- [x] query indices for symbols
+- [x] query current qoute for symbol/s
+- [x] option to return array or raw json

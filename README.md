@@ -42,7 +42,7 @@ Usage
     $query->symbolSuggest($string);
     ```
 
-1. `quote(array $symbol [, array $params])`
+2. `quote(array $symbol [, array $params])`
 
     Query for current quote for given symbols and given parameters.
     
@@ -54,6 +54,35 @@ Usage
     $symbol = array('bas.de');
     $params = array('LastTradePriceOnly', 'x', 'c1');
     $query->quote($symbol, $params);
+    ```
+
+3. `historicalQuote(array $symbol, $startDate, $endDate [, $param])`
+
+    Query for historical quotes for given symbol with given start date and end date.
+
+    Only one `$symbol` can be passed per query and must be a string.
+
+    `$startDate` and `$endDate` must be in the format YYYY-MM-DD.
+
+    `$param`is set to default 'd' = daily. See `$queryParams`in the method for other options. 
+
+    ```php
+    $symbol = array('bas.de');
+    $startDate = 2013-07-26;
+    $endDate = 2014-01-06
+    $param = 'd';
+    $query->historicalQuote($symbol, $startDate, $endDate, $param);
+    ```
+
+4. `index(array $symbol)`
+
+    Query for an index which returns the symbol and name of the components. Several symbols may be passed as aa array.
+
+    See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
+
+    ```php
+    $symbol = array('^GDAXI');
+    $query->index($symbol);
     ```
 
 Recources
