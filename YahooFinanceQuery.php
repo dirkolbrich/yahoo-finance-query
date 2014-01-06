@@ -354,7 +354,7 @@ class YahooFinanceQuery
             $dataKeys[$key] = str_replace(' ', '', $value);
         }
         unset($result[0]);
-        $result = array_values(&$result);
+        $result = array_values($result);
         //build array
         $data = array();
         foreach ($result as $key => $row) {
