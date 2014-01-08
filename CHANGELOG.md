@@ -1,5 +1,11 @@
 Changelog
 ---------
+- 0.2.3 (2014-01-08)
+
+   * added function `stockInfo()`
+   * added function `sectorList()`
+   * changed function `index()` to `indexList()`
+   
 - 0.2.2 (2014-01-06)
 
    * added function `historicalQuote()`
