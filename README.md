@@ -2,6 +2,15 @@ YahooFinanceQuery
 =================
 A PHP class to query the Yahoo Finance API.
 
+Features
+--------
+- search for symbol via Yahoo.Finance.Symbol.AutoSuggest
+- query current quotes for symbols
+- query historical quotes for single symbol
+- query basic stock info
+- query list of related stocks for index symbol
+- query full list of sectors with related industries
+
 Implementation
 --------------
 As simple as that:
@@ -56,13 +65,13 @@ Usage
     $query->quote($symbol, $params);
     ```
 
-3. `historicalQuote(array $symbol, $startDate, $endDate [, $param])`
+3. `historicalQuote(array $symbol [, $startDate, $endDate [, $param]])`
 
     Query for historical quotes for given symbol with given start date and end date.
 
     Only one `$symbol` can be passed per query and must be a string.
 
-    `$startDate` and `$endDate` must be in the format YYYY-MM-DD.
+    `$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes.
 
     `$param`is set to default 'd' = daily. See `$queryParams`in the method for other options. 
 
@@ -74,15 +83,34 @@ Usage
     $query->historicalQuote($symbol, $startDate, $endDate, $param);
     ```
 
-4. `index(array $symbol)`
+4. `indexList(array $symbol)`
 
-    Query for an index which returns the symbol and name of the components. Several symbols may be passed as aa array.
+    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array.
 
     See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
 
     ```php
     $symbol = array('^GDAXI');
-    $query->index($symbol);
+    $query->indexList($symbol);
+    ```
+
+5. `sectorList()`
+
+    Query for a complete list of sectors and their corresponding industries.
+
+    This function is static withour any params.
+
+    ```php
+    $query->sectorList();
+    ```
+
+6. `stockInfo($symbol)`
+
+    Query the Yahoo Finace html page for basic stock information. The symbols must be passed as as string.
+
+    ```php
+    $symbol = 'bas.de';
+    $query->stockInfo($symbol);
     ```
 
 Recources
