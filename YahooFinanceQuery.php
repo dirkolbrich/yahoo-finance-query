@@ -6,7 +6,7 @@
  * @copyright   2013 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
- * @version     0.2.2
+ * @version     0.2.3
  * @package     YahooFinanceQuery
  */
 
@@ -241,88 +241,19 @@ class YahooFinanceQuery
         if (is_object($data)) {
             $data = array($data);
         }
-        
-        /*
-        //add UTC timestamp to dataset
-        foreach ($data as $dataEntryKey => $dataEntry) {
-            //normalize time zones for date and time to UTC
-            // as it appears that these values are set with different timezones depending 
-            // on the symbol/market and the server the request goes to
-            if (isset($dataEntry->LastTradeTime) and isset($dataEntry->LastTradeDate)) {
-                $time = $dataEntry->LastTradeTime; // is time of server, EST for finance.yahoo.com
-                $timeZone = new \DateTimeZone('America/New_York'); //set timezone
-                $time = date_create_from_format('g:ia', $time, $timeZone);
-                $time->setTimeZone(new \DateTimeZone('UTC')); // change timezone
-                $time = date_format($time, 'H:i:s'); // extract time for that timezone
-            
-                $date = $dataEntry->LastTradeDate; //in home exchanges timezone, GMT for Xetra
-                $timeZone = new \DateTimeZone('America/New_York'); //set timezone
-                $date = date_create_from_format('n/j/Y', $date, $timeZone);
-                $date->setTimeZone(new \DateTimeZone('UTC')); // change timezone
-                $date = date_format($date, 'd.m.Y'); //extract date for that timezone
-                $dateTime = sprintf('%s %s',$date, $time); //merge date and time as string, separator whitespace
-                $timeZone = new \DateTimeZone('UTC'); //set timezone
-                $timeStamp = date_create_from_format('d.m.Y H:i:s', $dateTime, $timeZone); //generate timestamp
-                $dataEntry->LastTradeDateTime = $timeStamp;
-            }
-        }
-        */
         //return data
         return $data;
     }
-
-    //function depreciated, YQL query returns only up to 364 result, direct csv query has no such limitation
-    /*
-    *   get historical quotes for provided symbol from yahoo.finance.com, use YQL and open datatables
-    *   @param string $symbol
-    *   @param string $startDate yyyy-mm-dd
-    *   @param string $endDate yyyy-mm-dd
-    *   @return array $quoteList - array with quotes
-    */
-    /*
-    public function historicalQuote($symbol, $startDate, $endDate)
-    {
-        //set yql query
-        $yql_query = 'select * from yahoo.finance.historicaldata where symbol = "' . $symbol . '" and startDate="' . $startDate . '" and endDate="' . $endDate . '"';
-        //YQL query returns only up to 364 results
-        //set request url 
-        $base_url = 'http://query.yahooapis.com/v1/public/yql';
-        $config = '&format=json&env=http://datatables.org/alltables.env&callback=';
-        $query_url = $base_url.'?q=' . urlencode($yql_query) . $config;
-        //curl request
-        $curlRequest = $this->curlRequest($query_url);
-        if ($this->config['returnType'] == 'json') {
-            return $curlRequest['result'];
-        }
-        //read json
-        $object = json_decode($curlRequest['result']);
-        //select object node
-        $data = $object->query->results->quote;
-        //check array
-        if (empty($data)) {
-            echo 'No data found.';
-            return null;
-        } else {
-            foreach ($data as $quote) {
-                if (is_object($quote)) {
-                    settype($quote, 'array');
-                }
-                $quoteList[] = $quote;
-            }
-            $quoteList = array_values($quoteList);
-        }
-        return $quoteList;
-    }
-    */
 
     /**
     *   get historical quotes for provided symbol from yahoo.finance.com, direct query to csv
     *   @param string $symbol
     *   @param string $startDate yyyy-mm-dd
     *   @param string $endDate yyyy-mm-dd
+    *   @param string $param - type of data
     *   @return array $quoteList - array with quotes
     */
-    function historicalQuote($symbol, $startDate, $endDate, $param = 'd')
+    function historicalQuote($symbol, $startDate = null, $endDate = null, $param = 'd')
     {
         $queryParams = array(
             'd' => 'daily',
@@ -330,16 +261,35 @@ class YahooFinanceQuery
             'm' => 'monthly',
             'v' => 'dividends'
             );
+        $this->vdump($symbol, $startDate, $endDate, $param);
+        //set request url
+        $base_url = 'http://ichart.finance.yahoo.com/table.csv';
+        $configValue = '&g=' . $param . '&ignore=.csv';
+        $query_url = $base_url . '?s=' . urlencode($symbol);
+
+        //set startDate and endDate as option
+        //query returns complete available historical data if no date is passed
+        if (!is_null($startDate) and !is_null($endDate)) {
+            //check dates to prevent false query
+            if ($startDate > $endDate) {
+                $temp       = $startDate;
+                $startDate  = $endDate;
+                $endDate    = $temp;
+            }
         $startDate = explode('-', $startDate);
         $startDate[1] = $startDate[1]-1; //yahoo index starts with 0 for january
         $endDate = explode('-', $endDate);
         $endDate[1] = $endDate[1]-1; //yahoo index starts with 0 for january
-        // set request url
-        $base_url = 'http://ichart.finance.yahoo.com/table.csv';
+            
         $configStartDate = '&a=' . $startDate[1] . '&b=' . $startDate[2] . '&c=' . $startDate[0];
         $configEndDate = '&d=' . $endDate[1] . '&e=' . $endDate[2].'&f='.$endDate[0];
-        $configValue = '&g=' . $param . '&ignore=.csv';
-        $query_url = $base_url.'?s='.urlencode($symbol).$configStartDate.$configEndDate.$configValue;
+            
+            //add start and end date to query url if set
+            $query_url = $query_url . $configStartDate . $configEndDate;
+        }
+        //add config value to end of query url
+        $query_url = $query_url . $configValue;
+        $this->vdump($query_url);
         //curl request
         $curlRequest = $this->curlRequest($query_url);
         //parse csv
@@ -350,8 +300,8 @@ class YahooFinanceQuery
         unset($row);
         //assign headers of first row as key to values of following rows
         $dataKeys = $result[0];
-        foreach ($dataKeys as $key =>$value) {
-            $dataKeys[$key] = str_replace(' ', '', $value);
+        foreach ($dataKeys as $key => $value) {
+            $dataKeys[$key] = str_replace(' ', '', $value);//strip white space
         }
         unset($result[0]);
         $result = array_values($result);
@@ -372,18 +322,23 @@ class YahooFinanceQuery
     */
     function stockInfo($symbol)
     {
+        /*
+        *   YQL QUERY
         //set yql query
         $yql_query = 'select * from yahoo.finance.stocks where symbol="' . $symbol . '"';
         //set request url
         $base_url = 'http://query.yahooapis.com/v1/public/yql';
         $config = '&format=json&env=store://datatables.org/alltableswithkeys&callback=';
         $query_url = $base_url . '?q=' . rawurlencode($yql_query) . $config;
-
         //curl request
         $curlRequest = $this->curlRequest($query_url);
         $object = json_decode($curlRequest['result']);
-
-        // check if some data is returned
+        if ($this->config['returnType'] == 'json') {
+            return $curlRequest['result'];
+        }
+        //read json
+        $object = json_decode($curlRequest['result']);
+        //check for data
         if (is_null($object->query->results)) {
             return null;
         }
@@ -400,6 +355,39 @@ class YahooFinanceQuery
                 $stockInfoList[$key] = $stockInfo;
             }
         }
+        return $stockInfoList;
+        */
+        
+        /*
+        *   direct query to html
+        */
+        //set request url
+        $base_url = 'http://finance.yahoo.com/q/pr';
+        $query_url = $base_url . '?s=' . urlencode($symbol);
+        $this->vdump($query_url);
+        //curl request
+        $curlRequest = $this->curlRequest($query_url);
+        //parse html
+        $dom = new \DOMDocument();
+        @$dom->loadHTML($curlRequest['result']);
+        $dom->preserveWhiteSpace = false;
+        $body = new \DOMXPath($dom);
+        $data = array();
+        $i = 0;
+        //query DOM for key
+        foreach ($body->query('//td[@class="yfnc_modtitlew1"]//table[@class="yfnc_datamodoutline1"]//td[@class="yfnc_tablehead1"]') as $node) {
+            $data[$i]['key'] = str_replace(' ', '', rtrim($node->nodeValue, ':'));
+            $i++;
+        }
+        $i = 0;
+        foreach ($body->query('//td[@class="yfnc_modtitlew1"]//table[@class="yfnc_datamodoutline1"]//td[@class="yfnc_tabledata1"]') as $node) {
+            $data[$i]['value'] = $node->nodeValue;
+            $i++;
+        }
+        $stockInfoList = array();
+        foreach ($data as $dataEntry) {
+            $stockInfoList[] = array($dataEntry['key'] => $dataEntry['value']);
+        }
         //return data
         return $stockInfoList;
     }
@@ -409,7 +397,7 @@ class YahooFinanceQuery
     *   @param mixed $symbol
     *   @return array $indicesList - array with symbols
     */
-    function index(array $symbol)
+    function indexList(array $symbol)
     {
         //default indices
         $defaultSymbols = array(
@@ -455,10 +443,10 @@ class YahooFinanceQuery
     }
 
     /**
-    *   get list of sectors with corresponding industries from yahoo.finance.com
+    *   get full list of sectors with corresponding industries from yahoo.finance.com
     *   @return array $sectorsList - array with sectors
     */
-    function sectors()
+    function sectorList()
     {
         //set yql query
         $yql_query = 'select * from yahoo.finance.sectors';
@@ -466,51 +454,32 @@ class YahooFinanceQuery
         $base_url = 'http://query.yahooapis.com/v1/public/yql';
         $config = '&format=json&env=store://datatables.org/alltableswithkeys&callback=';
         $query_url = $base_url . '?q=' . rawurlencode($yql_query) . $config;
-
         //curl request
         $curlRequest = $this->curlRequest($query_url);
-        $object = json_decode($curlRequest['result']);
-
         if ($this->config['returnType'] == 'json') {
             return $curlRequest['result'];
         }
         //read json
-        $object = json_decode($curlRequest['result']);
+        $object = json_decode($curlRequest['result'], true);
         //check if some data is returned
-        if (is_null($object->query->results)) {
+        if (is_null($object['query']['results'])) {
             return null;
         }
         //select object node
-        $data = $object->query->results->sector;
+        $data = $object['query']['results']['sector'];
         //check array
         if (empty($data)) {
-            $sectorsList = '';
+            return null;
         } else {
-            foreach ($data as $sector) {
-                if (is_object($sector)) {
-                    settype($sector, 'array');
-                }
-                $sectorEntry = array('name' => $sector['name']);
-                $industryList = array();
-                if (empty($sector['industry'])) {
-                    $industryList = '';
-                } elseif( is_object($sector['industry']) ) {
-                    settype($sector['industry'], 'array');
-                    $sectorEntry['industry'] = array($sector['industry']);
-                } else {
-                    foreach ($sector['industry'] as $industry) {
-                        if (is_object($industry)) {
-                            settype($industry, 'array');
-                        }
-                        $industryList[] = $industry;
-                    }
-                    $sectorEntry['industry'] = $industryList;
-                }
-                $sectorsList[] = $sectorEntry;
+            //sanitize data for sector with single industry
+            foreach ($data as $key => $sector) {
+                if (!is_array($sector['industry'][0])) {
+                    $data[$key]['industry'] = array($sector['industry']);
             }
         }
         //return data
-        return $sectorsList;
+            return $data;
+        }
     }
     
     /**
@@ -523,6 +492,9 @@ class YahooFinanceQuery
         //curl request
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);    
+        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
         $curlResult['result'] = curl_exec($ch);
         $curlResult['status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlResult['error'] = curl_error($ch);
