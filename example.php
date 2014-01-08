@@ -85,17 +85,47 @@ $query = new YahooFinanceQuery\YahooFinanceQuery();
 <hr />
 
 <div>
-    <h4>function historicalQuote($symbol, $startDate, $endDate);</h4>
+    <h4>function stockInfo($symbol);</h4>
+    <p>Get stock info for "bas.de"</p>
+    <form method="post" action="">
+        <input type="text" name="symbol" value="bas.de"/>
+        <input type="submit" name="searchInfo" value="Search" />
+    </form>
+    
+    <?php 
+    if (isset($_POST['searchInfo'])) {
+        //strings to array
+        //$symbol = explode(' ', $_POST['symbol']);
+        $data = $query->stockInfo($_POST['symbol']); ?>
+    <table>
+        <tbody>
+        <?php foreach ($data as $dataKey => $dataEntry) { ?>
+            <tr>
+            <?php foreach ($dataEntry as $dataEntryKey => $dataSet) { ?>
+                <td><?php echo $dataEntryKey; ?></td>
+                <td><?php echo $dataSet; ?></td>
+            <?php } ?>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+    <?php } ?>
+</div>
+
+<hr />
+
+<div>
+    <h4>function historicalQuote($symbol, $startDate, $endDate [, $param]);</h4>
     <p>Get historical quotes for "bas.de"</p>
     <form method="post" action="">
         <input type="text" name="symbol" value="bas.de"/>
-        <input type="date" name="startDate" value="<?php echo date('Y-m-d', mktime(0, 0, 0, date('m')-1, date('d'), date('Y'))); ?>"/>
-        <input type="date" name="endDate" value="<?php echo date('Y-m-d'); ?>"/>
-        <select>
-            <option>daily</option>
-            <option>weekly</option>
-            <option>monthly</option>
-            <option>dividends</option>
+        <input type="date" name="startDate" value="<?php //echo date('Y-m-d', mktime(0, 0, 0, date('m')-1, date('d'), date('Y'))); ?>"/>
+        <input type="date" name="endDate" value="<?php //echo date('Y-m-d'); ?>"/>
+        <select name="param">
+            <option value="d" selected="selected">daily</option>
+            <option value="w">weekly</option>
+            <option value="m">monthly</option>
+            <option value="v">dividends</option>
         </select>
         <input type="submit" name="searchHistoricalQuote" value="Search" />
     </form>
@@ -103,7 +133,7 @@ $query = new YahooFinanceQuery\YahooFinanceQuery();
     <?php
     if (isset($_POST['searchHistoricalQuote'])) {
         //strings to array
-        $data = $query->historicalQuote($_POST['symbol'], $_POST['startDate'], $_POST['endDate']); ?>
+        $data = $query->historicalQuote($_POST['symbol'], $_POST['startDate'], $_POST['endDate'], $_POST['param']); ?>
     <table>
         <thead>
         <?php foreach ($data[0] as $dataKey => $dataEntry) { ?>
@@ -136,7 +166,7 @@ $query = new YahooFinanceQuery\YahooFinanceQuery();
     if (isset($_POST['searchIndex'])) {
         //strings to array
         $symbol = explode(' ', $_POST['symbol']);
-        $data = $query->index($symbol); ?>
+        $data = $query->indexList($symbol); ?>
     <table>
         <thead>
             <th>Symbol</th>
@@ -155,6 +185,42 @@ $query = new YahooFinanceQuery\YahooFinanceQuery();
     </table>
     <?php } ?>
 </div>
+<hr />
+
+<div>
+    <h4>function sectors();</h4>
+    <p>Get full list of sectors with corresponding industries</p>
+    <form method="post" action="">
+        <input type="submit" name="searchSectors" value="Get Sectors" />
+    </form>
+    
+    <?php 
+    if (isset($_POST['searchSectors'])) {
+        $data = $query->sectorList(); ?>
+    <p>
+        <?php foreach ($data as $sector) { ?>
+        <h4><?php echo $sector['name']; ?></h4>
+        <table>
+            <thead>
+                <th>ID</th>
+                <th>Name</th>
+            </thead>
+            <tbody>
+            <?php foreach ($sector['industry'] as $industry) { ?>
+                <tr>
+                <?php foreach ($industry as $value) { ?>
+                    <td><?php echo($value); ?></td>
+                <?php } ?>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+        <?php } ?>
+    </p>
+
+    <?php } ?>
+</div>
+<hr />
 
 </body>
 </html>
