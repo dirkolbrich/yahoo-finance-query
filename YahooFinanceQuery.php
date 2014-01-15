@@ -1,17 +1,17 @@
 <?php
+
+namespace YahooFinanceQuery;
+
 /**
  * YahooFinanceQuery - a PHP class to query the Yahoo Finance API
  *
- * @author      Dirk Olbrich <mail@dirkolbrich.de>
+ * @author      Dirk Olbrich <mail at dirkolbrich.de>
  * @copyright   2013 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     0.2.3
  * @package     YahooFinanceQuery
  */
-
-namespace YahooFinanceQuery;
-
 class YahooFinanceQuery
 {
     private $config = array(
