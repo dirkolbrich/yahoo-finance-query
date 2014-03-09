@@ -7,8 +7,9 @@ Features
 - search for symbol via Yahoo.Finance.Symbol.AutoSuggest
 - query current quotes for symbols
 - query historical quotes for single symbol
+- query intraday quotes for single symbol
 - query basic stock info
-- query list of related stocks for index symbol
+- query list of related stocks for index symbols
 - query full list of sectors with related industries
 
 Implementation
@@ -19,15 +20,24 @@ require 'YahooFinanceQuery.php';
 $query = new YahooFinanceQuery\YahooFinanceQuery;
 ```
 
+or as static:
+```php
+YahooFinanceQuery\YahooFinanceQuery->make();
+```
+
 Configuration
 -------------
-YahooFinanceQuery can be configured to return the data as an array or the raw json. Default `returnType` is 'array'.
+YahooFinanceQuery can be configured to return the data as an array or the raw json. Default `returnType` is `array`.
 
 The config setting has to be passed as an array `array('returnType' => 'array')` or  `array('returnType' => 'json')`.
 
 At initialisation:
 ```php
 $query = new YahooFinanceQuery\YahooFinanceQuery(array('returnType' => 'json'));
+```
+or as static:
+```php
+YahooFinanceQuery\YahooFinanceQuery->make(array('returnType' => 'json'));
 ```
 
 At run-time:
@@ -41,14 +51,31 @@ The current config setting can be retrieved with:
 $query->getConfig();
 ```
 
+To retrieve the raw cURL result use `raw()` as addition to the query. This method must be called before the actural query method.
+```php
+$query->raw()->quote()->get();
+```
+
+To force the use via the YQL api (if possible), use the `yql()` method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often with truncated results.
+```php
+$query->yql()->quote()->get();
+```
+
 Usage
 -----
+Querys are chainable. Use the `get()` method to to retrieve the results.
+```php
+$data = $query->method()->get();
+```
+
+Following query methods are available:
+
 1. `symbolSuggest($string)`
 
     Query for symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback
     ```php
     $string = 'basf';
-    $query->symbolSuggest($string);
+    $data = $query->symbolSuggest($string)->get();
     ```
 
 2. `quote(array $symbol [, array $params])`
@@ -57,60 +84,77 @@ Usage
     
     The passed parameter `$symbol` must be an array. Several symbols can be passed.
     
-    The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See as reference the `$quoteParams` variable in the class definition. If `$params` is empty, the query will use all possible params. 
-    The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. 
+    The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See as reference the `$quoteParams` variable in the class definition. If `$params` is empty, the query will use all possible params.
+    
+    The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.
+    
     ```php
     $symbol = array('bas.de');
     $params = array('LastTradePriceOnly', 'x', 'c1');
-    $query->quote($symbol, $params);
+    $data = $query->quote($symbol, $params)->get();
     ```
 
-3. `historicalQuote(array $symbol [, $startDate, $endDate [, $param]])`
+3. `historicalQuote(array $symbol [, $param, $startDate, $endDate])`
 
     Query for historical quotes for given symbol with given start date and end date.
 
     Only one `$symbol` can be passed per query and must be a string.
 
-    `$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes.
+    `$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes. If only one date is passed, the other one will be set to the maximum available.
 
-    `$param`is set to default 'd' = daily. See `$queryParams`in the method for other options. 
-
+    `$param` is set to default `d` = daily. See `$historicalQuoteParams` variable for other options.
+    
     ```php
     $symbol = array('bas.de');
-    $startDate = 2013-07-26;
-    $endDate = 2014-01-06
     $param = 'd';
-    $query->historicalQuote($symbol, $startDate, $endDate, $param);
+    $startDate = 2013-07-26;
+    $endDate = 2014-01-06;
+    $data = $query->historicalQuote($symbol, $param, $startDate, $endDate)->get();
+    ```
+    I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible.
+
+4. `intraDay($symbol [, $period, $param])`
+
+    Query the Yahoo Finance html page for intraday quotes. The symbol must be passed as as string.
+    
+    `$period` is optional and default set to `1d`. It is possible to retrieve intraday quotes for up to the last 15 days.
+    
+    `$param` is optional and default set to `quote`. For other options see the `$intraDayParams` variable.
+    
+    ```php
+    $symbol = 'bas.de';
+    $period = '5d';
+    $data = $query->intraDay($symbol, $period)->get();
     ```
 
-4. `indexList(array $symbol)`
+5. `stockInfo($symbol)`
 
-    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array.
+    Query the Yahoo Finance html page for basic stock information. The symbol must be passed as as string.
+
+    ```php
+    $symbol = 'bas.de';
+    $data = $query->stockInfo($symbol)->get();
+    ```
+
+6. `indexList(array $symbol)`
+
+    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array. If no sybol is passed, a default list of indexes returns. The default list can be set with the `$indexSymbolsDefault` variable.
 
     See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
 
     ```php
     $symbol = array('^GDAXI');
-    $query->indexList($symbol);
+    $data = $query->indexList($symbol)->get();
     ```
 
-5. `sectorList()`
+7. `sectorList()`
 
     Query for a complete list of sectors and their corresponding industries.
 
-    This function is static withour any params.
+    This function is static without any params.
 
     ```php
-    $query->sectorList();
-    ```
-
-6. `stockInfo($symbol)`
-
-    Query the Yahoo Finace html page for basic stock information. The symbols must be passed as as string.
-
-    ```php
-    $symbol = 'bas.de';
-    $query->stockInfo($symbol);
+    $data = $query->sectorList()->get();
     ```
 
 Recources
@@ -129,5 +173,8 @@ Blog post from Joseph D. Purcell with an overview over finance API'S is a good e
 www.gummy-stuff.org explains the Yahoo Finance .csv API
 * http://www.gummy-stuff.org/Yahoo-data.htm
 
-Tutorial by Thomas Belser (german)
+An overview over different api endpoints by Matthias Brusdeylins (german)
+* http://brusdeylins.info/projects/yahoo-finance-api/
+
+Tutorial for the YQL stuff by Thomas Belser (german)
 * http://www.thomasbelser.net/2011/12/13/auslesen-von-aktienkursen-und-deren-symbole-mit-php-und-yql/

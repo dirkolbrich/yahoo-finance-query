@@ -1,20 +1,30 @@
 Changelog
 ---------
+- 0.3.0 (2014-03-09)
+
+    * added chainable methods
+    * added optional direct query or query via yql console if possible
+    * added function `get()`
+    * added function `raw()`
+    * added function `toJson()`
+    * added function `intraDay()`
+    * added unified UTC timestamp to `quote()`
+
 - 0.2.3 (2014-01-08)
 
-   * added function `stockInfo()`
-   * added function `sectorList()`
-   * changed function `index()` to `indexList()`
+    * added function `stockInfo()`
+    * added function `sectorList()`
+    * changed function `index()` to `indexList()`
    
 - 0.2.2 (2014-01-06)
 
-   * added function `historicalQuote()`
-   * added function `index()`
-   * unified cURL request in separate method `curlRequest($url)`
+    * added function `historicalQuote()`
+    * added function `index()`
+    * unified cURL request in separate method `curlRequest($url)`
 
 - 0.2.1 (2014-01-03)
 
-   * fixed bug in `quote()` for single or multipe query symbols
+    * fixed bug in `quote()` for single or multipe query symbols
 
 - 0.2.0 (2011-01-03)
 
