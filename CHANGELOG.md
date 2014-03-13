@@ -1,5 +1,9 @@
 Changelog
 ---------
+- 0.3.1 (2014-03-13)
+
+    * fixed returned array in `stockInfo()` to simple array 
+
 - 0.3.0 (2014-03-09)
 
     * added chainable methods
