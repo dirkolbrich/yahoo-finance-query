@@ -687,7 +687,7 @@ class YahooFinanceQuery
         }
         $list = array();
         foreach ($data as $dataEntry) {
-            $list[] = array($dataEntry['key'] => $dataEntry['value']);
+            $list[$dataEntry['key']] = $dataEntry['value'];
         }
         
         return $list;
