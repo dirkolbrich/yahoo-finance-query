@@ -18,7 +18,7 @@ require via `composer.json` in your project root
 ```json
 {
     "require": {
-        "dirkolbrich/YahooFinanceQuery": "dev-master"
+        "dirkolbrich/yahoo-finance-query": "dev-master"
     }
 }
 ```

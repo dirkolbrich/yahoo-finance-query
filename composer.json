@@ -1,5 +1,5 @@
 {
-    "name": "dirkolbrich/YahooFinanceQuery",
+    "name": "dirkolbrich/yahoo-finance-query",
     "description": "A PHP class to query the Yahoo Finance API",
     "license": "MIT",
     "keywords": ["yahoo", "finance"],
