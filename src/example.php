@@ -206,12 +206,10 @@ $query = DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery::make();
         $data = $query->stockInfo($_POST['symbol'])->get(); ?>
     <table>
         <tbody>
-        <? foreach ($data as $dataKey => $dataEntry) { ?>
+        <? foreach ($data as $key => $val) { ?>
             <tr>
-            <? foreach ($dataEntry as $dataEntryKey => $dataSet) { ?>
-                <td><?=$dataEntryKey; ?></td>
-                <td><?=$dataSet; ?></td>
-            <? } ?>
+                <td><?=$key; ?></td>
+                <td><?=$val; ?></td>
             </tr>
         <? } ?>
         </tbody>
