@@ -6,7 +6,12 @@
 <body>
 <?
 require 'YahooFinanceQuery.php';
-$query = YahooFinanceQuery\YahooFinanceQuery::make();
+$query = DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery::make();
+var_dump($query->getConfig());
+$config = $query->getConfig();
+if ($config['returnType'] == 'array') {
+    echo 'is true';
+}
 ?>
 
 <h2>YahooFinanceQuery Example</h2>
@@ -19,8 +24,8 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
         <input type="text" name="string" value="basf" placeholder="basf"/>
         <input type="submit" name="searchSymbol" value="Search" />
     </form>
-    
-    <? 
+
+    <?
     if (isset($_POST['searchSymbol'])) {
         $data = $query->symbolSuggest($_POST['string'])->get(); ?>
     <table>
@@ -58,8 +63,8 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
         <input type="submit" name="getQuote" value="Search" />
         <input type="checkbox" name="getQuoteYQL" /><label for="getQuoteYQL">via YQL</label>
     </form>
-    
-    <? 
+
+    <?
     if (isset($_POST['getQuote'])) {
         //strings to array
         $symbol = explode(' ', $_POST['symbol']);
@@ -161,8 +166,8 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
         <input type="checkbox" name="getIntraDayYQL" /><label for="getIntraDayYQL">via YQL</label>
         -->
     </form>
-    
-    <? 
+
+    <?
     if (isset($_POST['getIntraDay'])) {
         //strings to array
         $symbol = $_POST['symbol'];
@@ -198,8 +203,8 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
         <input type="text" name="symbol" value="bas.de"/>
         <input type="submit" name="getStockInfo" value="Search" />
     </form>
-    
-    <? 
+
+    <?
     if (isset($_POST['getStockInfo'])) {
         //strings to array
         //$symbol = explode(' ', $_POST['symbol']);
@@ -228,14 +233,14 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
         <input type="text" name="symbol" value="^GDAXI"/>
         <input type="submit" name="getIndex" value="Search" />
     </form>
-    
-    <? 
+
+    <?
     if (isset($_POST['getIndex'])) {
         //strings to array
         $symbol = explode(' ', $_POST['symbol']);
         $data = $query->indexList($symbol)->get(); ?>
         <? foreach ($data as $key => $index) { ?>
-        <p><?=$key ?></p>    
+        <p><?=$key ?></p>
         <table>
             <thead>
                 <th>Symbol</th>
@@ -263,7 +268,7 @@ $query = YahooFinanceQuery\YahooFinanceQuery::make();
     <form method="post" action="">
         <input type="submit" name="getSectors" value="Get Sectors" />
     </form>
-    
+
     <?
     if (isset($_POST['getSectors'])) {
         $data = $query->sectorList()->get(); ?>

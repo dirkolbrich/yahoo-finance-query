@@ -3,27 +3,27 @@
  * YahooFinanceQuery - a PHP class to query the Yahoo Finance API
  *
  * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013 Dirk Olbrich
+ * @copyright   2013-2014 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     0.3.1
  * @package     YahooFinanceQuery
  */
 
-namespace YahooFinanceQuery;
+namespace DirkOlbrich\YahooFinanceQuery;
 
 class YahooFinanceQuery
 {
     protected $config = array(
         'returnType' => 'array', // 'array' or 'json'
         );
-        
+
     protected $query;
     protected $result;
     protected $raw = false;
     protected $yql = false;
     protected $toJson = false;
-    
+
     private $quoteParams = array(
         'a' => 'Ask',
         'a2' => 'AverageDailyVolume',
@@ -110,18 +110,18 @@ class YahooFinanceQuery
         'x' => 'StockExchange',
         'y' => 'DividendYield',
     );
-    
+
     private $historicalQuoteParams = array(
         'd' => 'daily',
         'w' => 'weekly',
         'm' => 'monthly',
         'v' => 'dividends',
     );
-    
+
     private $intraDayPeriods = array(
         '1d','5d','10d','15d',
     );
-    
+
     private $intraDayParams = array(
         'quote','sma','close','volume',
     );
@@ -155,7 +155,7 @@ class YahooFinanceQuery
         $query = new YahooFinanceQuery($config);
         return $query;
     }
-    
+
     /**
     *   configurator
     */
@@ -185,7 +185,7 @@ class YahooFinanceQuery
         $this->raw = true;
         return $this;
     }
-    
+
     /*
     *
     */
@@ -194,7 +194,7 @@ class YahooFinanceQuery
         $this->yql = true;
         return $this;
     }
-    
+
     /*
     *
     */
@@ -215,18 +215,18 @@ class YahooFinanceQuery
     public function toJson()
     {
         $this->toJson = true;
-        return $this;        
+        return $this;
     }
 
     /**
-    *   get list of stocks with symbol and market for provided search string from yahoo.finance.com's stock symbol autosuggest callback 
+    *   get list of stocks with symbol and market for provided search string from yahoo.finance.com's stock symbol autosuggest callback
     *   @param string $string - name to search for
     */
     public function symbolSuggest($string)
     {
         $this->query = $string;
         //set url for callback
-        $query_url = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($string) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';     
+        $query_url = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($string) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
         //curl request
         $response = $this->curlRequest($query_url);
         if ($this->raw) {
@@ -236,7 +236,7 @@ class YahooFinanceQuery
 
         //read json
         $json = preg_replace('/.+?({.+}).+/', '$1', $response['result']);
-        
+
         //convert json to array
         $object = json_decode($json);
         $data = $object->ResultSet->Result;
@@ -277,11 +277,11 @@ class YahooFinanceQuery
         );
         //check if array contains duplicates, remove and rearrange numbers
         $symbols = array_values(array_unique($symbol));
-        
+
         if ($this->yql) { // request via yql console
             $this->yql = false; // reset $yql
             $data = $this->quoteYQL($symbols, $params, $defaultParams);
-        } else { // direct request via .csv        
+        } else { // direct request via .csv
             $data = $this->quoteCSV($symbols, $params, $defaultParams);
         }
 
@@ -295,17 +295,17 @@ class YahooFinanceQuery
             $time = $dataSet['LastTradeTime'];
             $date = $dataSet['LastTradeDate'];
             $timeString = $time.' '.$date;
-            
+
             $yahooTimezone = new \DateTimeZone('America/New_York');
             $yahooDateTime = new \DateTime($timeString, $yahooTimezone);
-            
+
             $yahooDateTime->setTimezone(new \DateTimeZone('UTC'));
             //$this->v($yahooDateTime->format('d.m.Y H:i:s'));
-            
+
             $dataSet['LastTradeTimestamp'] = $yahooDateTime->format('U');
             $dataSet['LastTradeUTCTime'] = $yahooDateTime->format('c');
         }
-        
+
         $this->result = $data;
         return $this;
     }
@@ -334,15 +334,15 @@ class YahooFinanceQuery
         if ($this->yql) { // request via yql console
             $this->yql = false; // reset $yql
             $data = $this->historicalQuoteYQL($symbol, $startDate, $endDate, $param);
-        } else { // direct request via .csv        
+        } else { // direct request via .csv
             $data = $this->historicalQuoteCSV($symbol, $startDate, $endDate, $param);
         }
-        
+
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $data;
         }
-        
+
         $this->result = $data;
         return $this;
     }
@@ -382,7 +382,7 @@ class YahooFinanceQuery
         $result = ltrim(rtrim($response['result'], ' )'), 'finance_charts_json_callback( ');
         //read json
         $object = json_decode($result);
-        
+
         //check if some data is returned
         if (is_null($object->series)){
             $data = null;
@@ -396,12 +396,12 @@ class YahooFinanceQuery
             // cast single datasets to array
             foreach ($data as &$dataSet) {
                 if (is_object($dataSet)) {
-                    $dataSet = (array)$dataSet; 
+                    $dataSet = (array)$dataSet;
                 }
             }
             unset($dataSet);
         }
-        
+
         $this->result = $data;
         return $this;
     }
@@ -413,19 +413,19 @@ class YahooFinanceQuery
     function stockInfo($symbol)
     {
         $this->query = $symbol;
-        
+
         if ($this->yql) { // request via yql console
             $this->yql = false; // reset $yql
             $data = $this->stockInfoYQL($symbol);
         } else { // direct request
             $data = $this->stockInfoDirect($symbol);
         }
-        
+
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $data;
         }
-        
+
         //return data
         $this->result = $data;
         return $this;
@@ -439,7 +439,7 @@ class YahooFinanceQuery
     {
         // default indices
         if (empty($symbol[0])) {
-           $symbol = $this->indexSymbolsDefault; 
+           $symbol = $this->indexSymbolsDefault;
         }
         $symbolList = array();
         foreach ($symbol as $value) {
@@ -515,12 +515,12 @@ class YahooFinanceQuery
             //return data
             $this->result = $data;
         }
-        
+
         return $this;
     }
-    
+
     /****** CSV Querys ******/
-    
+
     /**
     *   query url for quotes via direct .csv query
     */
@@ -547,20 +547,20 @@ class YahooFinanceQuery
             }
         }
         //merge with default params
-        $paramList = array_merge(array_keys($paramList), array_keys($defaultParams));        
+        $paramList = array_merge(array_keys($paramList), array_keys($defaultParams));
         $paramString = implode('', $paramList);
-        
+
         //set request url
         $base_url = 'http://finance.yahoo.com/d/quotes.csv?s=';
         $query_url = $base_url . $symbolString . '&f=' . $paramString . '&e=.csv';
-        
+
         //curl request
         $response = $this->curlRequest($query_url);
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $response;
         }
-        
+
         //parse csv
         $result = str_getcsv($response['result'], "\n"); //parse rows
         foreach ($result as &$row) { //parse items in row
@@ -600,35 +600,35 @@ class YahooFinanceQuery
             $startDate[1] = $startDate[1]-1; //yahoo index starts with 0 for january
 
             $configStartDate = '&a=' . $startDate[1] . '&b=' . $startDate[2] . '&c=' . $startDate[0];
-            
+
         } else {
             $configStartDate = '&a=' . '' . '&b=' . '' . '&c=' . '';
         }
         if (!empty($endDate)) {
             $endDate = explode('-', $endDate);
             $endDate[1] = $endDate[1]-1; //yahoo index starts with 0 for january
-            
+
             $configEndDate = '&d=' . $endDate[1] . '&e=' . $endDate[2] . '&f=' . $endDate[0];
-            
+
         } else {
             $configEndDate = '&d=' . '' . '&e=' . '' . '&f=' . '';
         }
-        
+
         //add start and end date to query url if set
         $configDate = $configStartDate . $configEndDate;
-        
+
         //set request url
         $base_url = 'http://ichart.finance.yahoo.com/table.csv?s=';
         $configValue = '&g=' . $param . '&ignore=.csv';
         $query_url = $base_url . urlencode($symbol) . $configDate . $configValue;
-        
+
         //curl request
         $response = $this->curlRequest($query_url);
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $response;
         }
-        
+
         //parse csv
         $result = str_getcsv($response['result'], "\n"); //parse rows
         foreach ($result as &$row) { //parse items in row
@@ -660,14 +660,14 @@ class YahooFinanceQuery
         //set request url
         $base_url = 'http://finance.yahoo.com/q/pr?s=';
         $query_url = $base_url . urlencode($symbol);
-        
+
         //curl request
         $response = $this->curlRequest($query_url);
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $response;
         }
-        
+
         //parse html
         $dom = new \DOMDocument();
         @$dom->loadHTML($response['result']);
@@ -689,7 +689,7 @@ class YahooFinanceQuery
         foreach ($data as $dataEntry) {
             $list[$dataEntry['key']] = $dataEntry['value'];
         }
-        
+
         return $list;
     }
 
@@ -708,7 +708,7 @@ class YahooFinanceQuery
         }
         //implode to string
         $symbolString = implode(', ', $symbols);
-        
+
         //set list of params
         $params = array_filter($params);
         if (empty($params)) {
@@ -729,10 +729,10 @@ class YahooFinanceQuery
         //merge with default params
         $paramList = array_merge($paramList, $defaultParams);
         $paramString = implode(', ', $paramList);
-        
+
         //set yql query
         $yql_query = 'select ' . $paramString . ' from yahoo.finance.quotes where symbol in (' .$symbolString . ')';
-        
+
         //set request url
         $base_url = 'http://query.yahooapis.com/v1/public/yql?q=';
         $config = '&format=json&env=http://datatables.org/alltables.env&callback=';
@@ -744,7 +744,7 @@ class YahooFinanceQuery
             $this->raw = false; // reset $raw
             return $response;
         }
-        
+
         //read json
         $object = json_decode($response['result']);
         //check if some data is returned
@@ -761,7 +761,7 @@ class YahooFinanceQuery
             // cast single datasets to array
             foreach ($data as &$dataSet) {
                 if (is_object($dataSet)) {
-                    $dataSet = (array)$dataSet; 
+                    $dataSet = (array)$dataSet;
                 }
             }
             unset($dataSet);
@@ -780,29 +780,29 @@ class YahooFinanceQuery
             $startDate  = $endDate;
             $endDate    = $temp;
         }
-        
+
         if (empty($startDate)) {
             $startDate = '';
         }
         if (empty($endDate)) {
             $endDate = '';
         }
-        
+
         // set yql query
         $yql_query = 'select * from yahoo.finance.historicaldata where symbol = "'.$symbol.'" and startDate="'.$startDate.'" and endDate="'.$endDate.'"';
 
-        // set request url 
+        // set request url
         $base_url = 'http://query.yahooapis.com/v1/public/yql?q=';
         $config = '&format=json&env=http://datatables.org/alltables.env&callback=';
         $query_url = $base_url . urlencode($yql_query) . $config;
-        
+
         //curl request
         $response = $this->curlRequest($query_url);
         if ($this->raw) {
             $this->raw = false; // reset $raw
             return $response;
         }
-        
+
         //read json
         $object = json_decode($response['result']);
         //check if some data is returned
@@ -819,21 +819,21 @@ class YahooFinanceQuery
             // cast single datasets to array
             foreach ($data as &$dataSet) {
                 if (is_object($dataSet)) {
-                    $dataSet = (array)$dataSet; 
+                    $dataSet = (array)$dataSet;
                 }
             }
             unset($dataSet);
         }
         return $data;
     }
-    
+
     /**
     *   cURL request method
     *
     *   @param string $url
     *   @return array $response
     */
-    private function curlRequest($url) 
+    private function curlRequest($url)
     {
         $response = array(
             'query' => $url,
@@ -852,14 +852,14 @@ class YahooFinanceQuery
         //$this->v($response);
         return $response;
     }
-    
+
     //dev-tool
     /**
-    *   function for better var_dump() and print_r()  
+    *   function for better var_dump() and print_r()
     *   @param mixed $mixed
     */
     public function v($mixed)
-    {   
+    {
         $numArgs = func_num_args($mixed);
         $args = func_get_args($mixed);
         echo '<pre><code>';
@@ -871,5 +871,5 @@ class YahooFinanceQuery
         }
         echo '</code></pre>';
     }
-    
+
 }
