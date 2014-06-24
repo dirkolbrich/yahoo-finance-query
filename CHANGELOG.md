@@ -1,8 +1,13 @@
 Changelog
 ---------
+- 0.4.0 (2014-06-24)
+
+    * made PSR-4 package and added to packagist.org
+    * started adding unit tests
+
 - 0.3.1 (2014-03-13)
 
-    * fixed returned array in `stockInfo()` to simple array 
+    * fixed returned array in `stockInfo()` to simple array
 
 - 0.3.0 (2014-03-09)
 
@@ -19,7 +24,7 @@ Changelog
     * added function `stockInfo()`
     * added function `sectorList()`
     * changed function `index()` to `indexList()`
-   
+
 - 0.2.2 (2014-01-06)
 
     * added function `historicalQuote()`
@@ -33,7 +38,7 @@ Changelog
 - 0.2.0 (2011-01-03)
 
     * added function `quote()`
-    
+
 - 0.1.0 (2013-12-30 Initial commit)
 
     * added function `autoSuggest()`

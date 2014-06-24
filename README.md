@@ -12,6 +12,19 @@ Features
 - query list of related stocks for index symbols
 - query full list of sectors with related industries
 
+Installation
+------------
+require via `composer.json` in your project root
+```json
+{
+    "require": {
+        "dirkolbrich/YahooFinanceQuery": "dev-master"
+    }
+}
+```
+
+Or copy the `YahooFinanceQuery.php` from the `/src` folder into your project.
+
 Implementation
 --------------
 As simple as that:
@@ -81,13 +94,13 @@ Following query methods are available:
 2. `quote(array $symbol [, array $params])`
 
     Query for current quote for given symbols and given parameters.
-    
+
     The passed parameter `$symbol` must be an array. Several symbols can be passed.
-    
+
     The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See as reference the `$quoteParams` variable in the class definition. If `$params` is empty, the query will use all possible params.
-    
+
     The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.
-    
+
     ```php
     $symbol = array('bas.de');
     $params = array('LastTradePriceOnly', 'x', 'c1');
@@ -103,7 +116,7 @@ Following query methods are available:
     `$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes. If only one date is passed, the other one will be set to the maximum available.
 
     `$param` is set to default `d` = daily. See `$historicalQuoteParams` variable for other options.
-    
+
     ```php
     $symbol = array('bas.de');
     $param = 'd';
@@ -116,11 +129,11 @@ Following query methods are available:
 4. `intraDay($symbol [, $period, $param])`
 
     Query the Yahoo Finance html page for intraday quotes. The symbol must be passed as as string.
-    
+
     `$period` is optional and default set to `1d`. It is possible to retrieve intraday quotes for up to the last 15 days.
-    
+
     `$param` is optional and default set to `quote`. For other options see the `$intraDayParams` variable.
-    
+
     ```php
     $symbol = 'bas.de';
     $period = '5d';
