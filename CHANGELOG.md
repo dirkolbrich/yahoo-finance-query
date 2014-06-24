@@ -1,8 +1,9 @@
 Changelog
 ---------
-- 0.4.0 (xxxx-xx-xx)
+- 0.4.0 (2014-06-24)
 
-    * added unit tests
+    * made PSR-4 package and added to packagist.org
+    * started adding unit tests
 
 - 0.3.1 (2014-03-13)
 

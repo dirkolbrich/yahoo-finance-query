@@ -6,7 +6,7 @@
  * @copyright   2013-2014 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
- * @version     0.3.1
+ * @version     0.4.0
  * @package     YahooFinanceQuery
  */
 

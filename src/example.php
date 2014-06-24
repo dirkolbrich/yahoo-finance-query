@@ -7,11 +7,6 @@
 <?
 require 'YahooFinanceQuery.php';
 $query = DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery::make();
-var_dump($query->getConfig());
-$config = $query->getConfig();
-if ($config['returnType'] == 'array') {
-    echo 'is true';
-}
 ?>
 
 <h2>YahooFinanceQuery Example</h2>
