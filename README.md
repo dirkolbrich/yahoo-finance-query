@@ -107,7 +107,7 @@ Following query methods are available:
     $data = $query->quote($symbol, $params)->get();
     ```
 
-3. `historicalQuote(array $symbol [, $param, $startDate, $endDate])`
+3. `historicalQuote(array $symbol [, $startDate, $endDate, $param])`
 
     Query for historical quotes for given symbol with given start date and end date.
 
@@ -119,12 +119,12 @@ Following query methods are available:
 
     ```php
     $symbol = array('bas.de');
-    $param = 'd';
     $startDate = 2013-07-26;
     $endDate = 2014-01-06;
-    $data = $query->historicalQuote($symbol, $param, $startDate, $endDate)->get();
+    $param = 'd';
+    $data = $query->historicalQuote($symbol, $startDate, $endDate, $param)->get();
     ```
-    I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible.
+    I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible via YQL.
 
 4. `intraDay($symbol [, $period, $param])`
 
