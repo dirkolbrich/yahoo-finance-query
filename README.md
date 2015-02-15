@@ -12,6 +12,10 @@ Features
 - query list of related stocks for index symbols
 - query full list of sectors with related industries
 
+Example
+-------
+You can test the example.php at http://code.dirkolbrich.de/YahooFinanceQuery/example.php
+
 Installation
 ------------
 require via `composer.json` in your project root
@@ -30,12 +34,16 @@ Implementation
 As simple as that:
 ```php
 require 'YahooFinanceQuery.php';
-$query = new YahooFinanceQuery\YahooFinanceQuery;
+use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+// [...]
+$query = new YahooFinanceQuery;
 ```
 
 or as static:
 ```php
-YahooFinanceQuery\YahooFinanceQuery->make();
+use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+// [...]
+YahooFinanceQuery->make();
 ```
 
 Configuration
@@ -46,16 +54,16 @@ The config setting has to be passed as an array `array('returnType' => 'array')`
 
 At initialisation:
 ```php
-$query = new YahooFinanceQuery\YahooFinanceQuery(array('returnType' => 'json'));
+$query = new YahooFinanceQuery(array('returnType' => 'json'));
 ```
 or as static:
 ```php
-YahooFinanceQuery\YahooFinanceQuery->make(array('returnType' => 'json'));
+YahooFinanceQuery->make(array('returnType' => 'json'));
 ```
 
 At run-time:
 ```php
-$query = new YahooFinanceQuery\YahooFinanceQuery;
+$query = new YahooFinanceQuery;
 $query->config(array('returnType' => 'json'));
 ```
 
