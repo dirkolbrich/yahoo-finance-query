@@ -292,9 +292,12 @@ class YahooFinanceQuery
 
         // add unix timestamp and UTC time
         foreach ($data as &$dataSet) {
-            $time = $dataSet['LastTradeTime'];
-            $date = $dataSet['LastTradeDate'];
-            $timeString = $time.' '.$date;
+            $timeString = null;
+            if ("N/A" != $dataSet['LastTradeTime'] && "N/A" != $dataSet['LastTradeDate']) {
+                $time = $dataSet['LastTradeTime'];
+                $date = $dataSet['LastTradeDate'];
+                $timeString = $time.' '.$date;
+            }
 
             $yahooTimezone = new \DateTimeZone('America/New_York');
             $yahooDateTime = new \DateTime($timeString, $yahooTimezone);
