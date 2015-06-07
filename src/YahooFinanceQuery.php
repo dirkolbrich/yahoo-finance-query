@@ -839,6 +839,7 @@ class YahooFinanceQuery
             'query' => $url,
             );
             
+        // check for config setting of CURLOPT_USERAGENT in $this->config, else set to NULL
         $userAgent = @($this->config['userAgent'] ?: $_SERVER["HTTP_USER_AGENT"] ?: null);
             
         //curl request
