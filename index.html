@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Yahoo-finance-query : A PHP class to query the Yahoo Finance API.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Yahoo-finance-query</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/dirkolbrich/yahoo-finance-query">View on GitHub</a>
+
+          <h1 id="project_title">Yahoo-finance-query</h1>
+          <h2 id="project_tagline">A PHP class to query the Yahoo Finance API.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/dirkolbrich/yahoo-finance-query/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/dirkolbrich/yahoo-finance-query/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="yahoofinancequery" class="anchor" href="#yahoofinancequery" aria-hidden="true"><span class="octicon octicon-link"></span></a>YahooFinanceQuery</h1>
+
+<p>A PHP class to query the Yahoo Finance API.</p>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>search for symbol via Yahoo.Finance.Symbol.AutoSuggest</li>
+<li>query current quotes for symbols</li>
+<li>query historical quotes for single symbol</li>
+<li>query intraday quotes for single symbol</li>
+<li>query basic stock info</li>
+<li>query list of related stocks for index symbols</li>
+<li>query full list of sectors with related industries</li>
+</ul>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
+
+<p>You can test the example.php at <a href="http://code.dirkolbrich.de/YahooFinanceQuery/example.php">http://code.dirkolbrich.de/YahooFinanceQuery/example.php</a></p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>require via <code>composer.json</code> in your project root</p>
+
+<div class="highlight highlight-json"><pre>{
+    <span class="pl-s"><span class="pl-pds">"</span>require<span class="pl-pds">"</span></span>: {
+        <span class="pl-s"><span class="pl-pds">"</span>dirkolbrich/yahoo-finance-query<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>dev-master<span class="pl-pds">"</span></span>
+    }
+}</pre></div>
+
+<p>Or copy the <code>YahooFinanceQuery.php</code> from the <code>/src</code> folder into your project.</p>
+
+<h2>
+<a id="implementation" class="anchor" href="#implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Implementation</h2>
+
+<p>As simple as that:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">require</span> <span class="pl-s"><span class="pl-pds">'</span>YahooFinanceQuery.php<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery</span>;</span>
+<span class="pl-s1"><span class="pl-c">// [...]</span></span>
+<span class="pl-s1"><span class="pl-smi">$query</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">YahooFinanceQuery</span>;</span></pre></div>
+
+<p>or as static:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-k">use</span> <span class="pl-c1">DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery</span>;</span>
+<span class="pl-s1"><span class="pl-c">// [...]</span></span>
+<span class="pl-s1"><span class="pl-c1">YahooFinanceQuery</span><span class="pl-k">-&gt;</span>make();</span></pre></div>
+
+<h2>
+<a id="configuration" class="anchor" href="#configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>YahooFinanceQuery can be configured to return the data as an array or the raw json. Default <code>returnType</code> is <code>array</code>.</p>
+
+<p>The config setting has to be passed as an array <code>array('returnType' =&gt; 'array')</code> or  <code>array('returnType' =&gt; 'json')</code>.</p>
+
+<p>At initialisation:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$query</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">YahooFinanceQuery</span>(<span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>returnType<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>));</span></pre></div>
+
+<p>or as static:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-c1">YahooFinanceQuery</span><span class="pl-k">-&gt;</span>make(<span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>returnType<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>));</span></pre></div>
+
+<p>At run-time:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$query</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">YahooFinanceQuery</span>;</span>
+<span class="pl-s1"><span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>config(<span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>returnType<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>json<span class="pl-pds">'</span></span>));</span></pre></div>
+
+<p>The current config setting can be retrieved with:</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>getConfig();</span></pre></div>
+
+<p>To retrieve the raw cURL result use <code>raw()</code> as addition to the query. This method must be called before the actural query method.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>raw()<span class="pl-k">-&gt;</span>quote()<span class="pl-k">-&gt;</span>get();</span></pre></div>
+
+<p>To force the use via the YQL api (if possible), use the <code>yql()</code> method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often with truncated results.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>yql()<span class="pl-k">-&gt;</span>quote()<span class="pl-k">-&gt;</span>get();</span></pre></div>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Querys are chainable. Use the <code>get()</code> method to to retrieve the results.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>method()<span class="pl-k">-&gt;</span>get();</span></pre></div>
+
+<p>Following query methods are available:</p>
+
+<ol>
+<li>
+<p><code>symbolSuggest($string)</code></p>
+
+<p>Query for symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$string</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>basf<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>symbolSuggest(<span class="pl-smi">$string</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+<li>
+<p><code>quote(array $symbol [, array $params])</code></p>
+
+<p>Query for current quote for given symbols and given parameters.</p>
+
+<p>The passed parameter <code>$symbol</code> must be an array. Several symbols can be passed.</p>
+
+<p>The passed parameter <code>$params</code> is optional and must be an array too. It accepts the parameters as a written word or as tags. See as reference the <code>$quoteParams</code> variable in the class definition. If <code>$params</code> is empty, the query will use all possible params.</p>
+
+<p>The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$symbol</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>bas.de<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-smi">$params</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>LastTradePriceOnly<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>x<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>c1<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>quote(<span class="pl-smi">$symbol</span>, <span class="pl-smi">$params</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+<li>
+<p><code>historicalQuote(array $symbol [, $startDate, $endDate, $param])</code></p>
+
+<p>Query for historical quotes for given symbol with given start date and end date.</p>
+
+<p>Only one <code>$symbol</code> can be passed per query and must be a string.</p>
+
+<p><code>$startDate</code> and <code>$endDate</code> must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes. If only one date is passed, the other one will be set to the maximum available.</p>
+
+<p><code>$param</code> is set to default <code>d</code> = daily. See <code>$historicalQuoteParams</code> variable for other options.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$symbol</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>bas.de<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-smi">$startDate</span> <span class="pl-k">=</span> <span class="pl-c1">2013</span><span class="pl-k">-</span><span class="pl-c1">07</span><span class="pl-k">-</span><span class="pl-c1">26</span>;</span>
+<span class="pl-s1"><span class="pl-smi">$endDate</span> <span class="pl-k">=</span> <span class="pl-c1">2014</span><span class="pl-k">-</span><span class="pl-c1">01</span><span class="pl-k">-</span><span class="pl-c1">06</span>;</span>
+<span class="pl-s1"><span class="pl-smi">$param</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>d<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>historicalQuote(<span class="pl-smi">$symbol</span>, <span class="pl-smi">$startDate</span>, <span class="pl-smi">$endDate</span>, <span class="pl-smi">$param</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+
+<p>I recommend not to use the <code>yql()</code> method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible via YQL.</p>
+</li>
+<li>
+<p><code>intraDay($symbol [, $period, $param])</code></p>
+
+<p>Query the Yahoo Finance html page for intraday quotes. The symbol must be passed as as string.</p>
+
+<p><code>$period</code> is optional and default set to <code>1d</code>. It is possible to retrieve intraday quotes for up to the last 15 days.</p>
+
+<p><code>$param</code> is optional and default set to <code>quote</code>. For other options see the <code>$intraDayParams</code> variable.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$symbol</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>bas.de<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$period</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>5d<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>intraDay(<span class="pl-smi">$symbol</span>, <span class="pl-smi">$period</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+<li>
+<p><code>stockInfo($symbol)</code></p>
+
+<p>Query the Yahoo Finance html page for basic stock information. The symbol must be passed as as string.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$symbol</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>bas.de<span class="pl-pds">'</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>stockInfo(<span class="pl-smi">$symbol</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+<li>
+<p><code>indexList(array $symbol)</code></p>
+
+<p>Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array. If no sybol is passed, a default list of indexes returns. The default list can be set with the <code>$indexSymbolsDefault</code> variable.</p>
+
+<p>See <a href="http://finance.yahoo.com/intlindices?e=europe">http://finance.yahoo.com/intlindices?e=europe</a> for more symbols to world indices. The caret <code>^</code> character must be part of the symbol.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$symbol</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>^GDAXI<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>indexList(<span class="pl-smi">$symbol</span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+<li>
+<p><code>sectorList()</code></p>
+
+<p>Query for a complete list of sectors and their corresponding industries.</p>
+
+<p>This function is static without any params.</p>
+
+<div class="highlight highlight-php"><pre><span class="pl-s1"><span class="pl-smi">$data</span> <span class="pl-k">=</span> <span class="pl-smi">$query</span><span class="pl-k">-&gt;</span>sectorList()<span class="pl-k">-&gt;</span>get();</span></pre></div>
+</li>
+</ol>
+
+<h2>
+<a id="recources" class="anchor" href="#recources" aria-hidden="true"><span class="octicon octicon-link"></span></a>Recources</h2>
+
+<p>Some informative blog post and websites:</p>
+
+<p>Yahoo YQL homepage</p>
+
+<ul>
+<li><a href="http://developer.yahoo.com/yql/">http://developer.yahoo.com/yql/</a></li>
+</ul>
+
+<p>Blog post on that matter</p>
+
+<ul>
+<li><a href="http://www.yqlblog.net/blog/2009/06/02/getting-stock-information-with-yql-and-open-data-tables/">http://www.yqlblog.net/blog/2009/06/02/getting-stock-information-with-yql-and-open-data-tables/</a></li>
+</ul>
+
+<p>Blog post from Joseph D. Purcell with an overview over finance API'S is a good entry point</p>
+
+<ul>
+<li><a href="http://thesimplesynthesis.com/article/finance-apis">http://thesimplesynthesis.com/article/finance-apis</a></li>
+</ul>
+
+<p><a href="http://www.gummy-stuff.org">www.gummy-stuff.org</a> explains the Yahoo Finance .csv API</p>
+
+<ul>
+<li><a href="http://www.gummy-stuff.org/Yahoo-data.htm">http://www.gummy-stuff.org/Yahoo-data.htm</a></li>
+</ul>
+
+<p>An overview over different api endpoints by Matthias Brusdeylins (german)</p>
+
+<ul>
+<li><a href="http://brusdeylins.info/projects/yahoo-finance-api/">http://brusdeylins.info/projects/yahoo-finance-api/</a></li>
+</ul>
+
+<p>Tutorial for the YQL stuff by Thomas Belser (german)</p>
+
+<ul>
+<li><a href="http://www.thomasbelser.net/2011/12/13/auslesen-von-aktienkursen-und-deren-symbole-mit-php-und-yql/">http://www.thomasbelser.net/2011/12/13/auslesen-von-aktienkursen-und-deren-symbole-mit-php-und-yql/</a></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Yahoo-finance-query maintained by <a href="https://github.com/dirkolbrich">dirkolbrich</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
