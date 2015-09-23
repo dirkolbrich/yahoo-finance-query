@@ -841,10 +841,14 @@ class YahooFinanceQuery
         $response = array(
             'query' => $url,
             );
+            
+        // check for config setting of CURLOPT_USERAGENT in $this->config, else set to NULL
+        $userAgent = @($this->config['userAgent'] ?: $_SERVER["HTTP_USER_AGENT"] ?: null);
+            
         //curl request
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
+        curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
         $response['result'] = curl_exec($ch);
