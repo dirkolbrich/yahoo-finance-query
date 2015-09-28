@@ -89,22 +89,26 @@ $query = new YahooFinanceQuery;
             echo '<p>Direct query via csv.</p>';
         }
     ?>
-    <table>
-        <thead>
-        <?php foreach ($data[0] as $dataKey => $dataEntry) { ?>
-            <th><?php echo $dataKey; ?></th>
-        <?php } ?>
-        </thead>
-        <tbody>
-        <?php foreach ($data as $dataSet) { ?>
-            <tr>
-            <?php foreach ($dataSet as $key => $value) { ?>
-                <td><?php echo $value; ?></td>
+        <?php if (!empty($data)) { ?>
+        <table>
+            <thead>
+            <?php foreach ($data[0] as $dataKey => $dataEntry) { ?>
+                <th><?php echo $dataKey; ?></th>
             <?php } ?>
-            </tr>
-        <?php } ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            <?php foreach ($data as $dataSet) { ?>
+                <tr>
+                <?php foreach ($dataSet as $key => $value) { ?>
+                    <td><?php echo $value; ?></td>
+                <?php } ?>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+        <?php } else { ?>
+        <p>No Data found.</p>
+        <?php } ?>        
     <?php } ?>
 </div>
 <hr />

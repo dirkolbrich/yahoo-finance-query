@@ -130,6 +130,12 @@ class CurrentQuote extends Query
         //check if array contains duplicates, remove and rearrange numbers
         $symbols = array_values(array_unique($this->queryString));
 
+        // validate symbols
+        if (empty($symbols[0])) {
+            $this->result = [];
+            return $this;
+        }
+
         if ($this->yql) { // request via yql console
             $data = $this->queryYQL($symbols);
         } else { // direct request via .csv
@@ -180,6 +186,10 @@ class CurrentQuote extends Query
 
         // curl request
         $this->curlRequest($this->query_url);
+
+        if ($this->response['status'] = 404) {
+            return $data = [];
+        }
 
         // parse csv
         $result = str_getcsv($this->response['result'], "\n"); //parse rows
@@ -234,6 +244,10 @@ class CurrentQuote extends Query
         // curl request
         $this->curlRequest($this->query_url);
 
+        if ($this->response['status'] = 404) {
+            return $data = [];
+        }
+        
         // read json
         $object = json_decode($this->response['result']);
         // check if some data is returned
