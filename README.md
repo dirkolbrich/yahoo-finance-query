@@ -1,9 +1,9 @@
-YahooFinanceQuery
-=================
+## YahooFinanceQuery
+
 A PHP class to query the Yahoo Finance API.
 
-Features
---------
+### Features
+
 - search for symbol via Yahoo.Finance.Symbol.AutoSuggest
 - query current quotes for symbols
 - query historical quotes for single symbol
@@ -12,12 +12,12 @@ Features
 - query list of related stocks for index symbols
 - query full list of sectors with related industries
 
-Example
--------
-You can test the example.php at http://code.dirkolbrich.de/YahooFinanceQuery/example.php
+### Example
 
-Installation
-------------
+You can test an example.php at http://code.dirkolbrich.de/YahooFinanceQuery/
+
+### Installation
+
 require via `composer.json` in your project root
 ```json
 {
@@ -27,13 +27,10 @@ require via `composer.json` in your project root
 }
 ```
 
-Or copy the `YahooFinanceQuery.php` from the `/src` folder into your project.
+### Implementation
 
-Implementation
---------------
 As simple as that:
 ```php
-require 'YahooFinanceQuery.php';
 use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
 // [...]
 $query = new YahooFinanceQuery;
@@ -46,8 +43,8 @@ use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
 YahooFinanceQuery->make();
 ```
 
-Configuration
--------------
+### Configuration
+
 YahooFinanceQuery can be configured to return the data as an array or the raw json. Default `returnType` is `array`.
 
 The config setting has to be passed as an array `array('returnType' => 'array')` or  `array('returnType' => 'json')`.
@@ -77,19 +74,19 @@ To retrieve the raw cURL result use `raw()` as addition to the query. This metho
 $query->raw()->quote()->get();
 ```
 
-To force the use via the YQL api (if possible), use the `yql()` method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often with truncated results.
+To force the query via the YQL api (if possible), use the `yql()` method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often with truncated results.
 ```php
 $query->yql()->quote()->get();
 ```
 
-Usage
------
+### Usage
+
 Querys are chainable. Use the `get()` method to to retrieve the results.
 ```php
 $data = $query->method()->get();
 ```
 
-Following query methods are available:
+The following query methods are available:
 
 1. `symbolSuggest($string)`
 
@@ -136,7 +133,7 @@ Following query methods are available:
 
 4. `intraDay($symbol [, $period, $param])`
 
-    Query the Yahoo Finance html page for intraday quotes. The symbol must be passed as as string.
+    Query finance.yahoo.com for intraday quotes. The symbol must be passed as as string.
 
     `$period` is optional and default set to `1d`. It is possible to retrieve intraday quotes for up to the last 15 days.
 
@@ -150,7 +147,7 @@ Following query methods are available:
 
 5. `stockInfo($symbol)`
 
-    Query the Yahoo Finance html page for basic stock information. The symbol must be passed as as string.
+    Query finance.yahoo.com for basic stock information. The symbol must be passed as as string.
 
     ```php
     $symbol = 'bas.de';
@@ -159,7 +156,7 @@ Following query methods are available:
 
 6. `indexList(array $symbol)`
 
-    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array. If no sybol is passed, a default list of indexes returns. The default list can be set with the `$indexSymbolsDefault` variable.
+    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array.
 
     See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
 
@@ -178,8 +175,29 @@ Following query methods are available:
     $data = $query->sectorList()->get();
     ```
 
-Recources
----------
+    Which returns an array in this form:
+
+    ```php
+    Array (
+        [0] => Array (
+            [name] => Basic Materials
+            [industries] => Array (
+                [0] => Array (
+                    [name] => Agricultural Chemicals
+                    [id] => 112 )
+                [1] => Array (
+                    [name] => Aluminum
+                    [id] => 132 )
+                ... )
+            )
+        [1] => Array (
+            [name] => Conglomerates
+            [industries] => Array ( ... )
+            ) 
+    ```
+
+### Recources
+
 Some informative blog post and websites:
 
 Yahoo YQL homepage
@@ -197,5 +215,5 @@ www.gummy-stuff.org explains the Yahoo Finance .csv API
 An overview over different api endpoints by Matthias Brusdeylins (german)
 * http://brusdeylins.info/projects/yahoo-finance-api/
 
-Tutorial for the YQL stuff by Thomas Belser (german)
+Tutorial for the YQL console by Thomas Belser (german)
 * http://www.thomasbelser.net/2011/12/13/auslesen-von-aktienkursen-und-deren-symbole-mit-php-und-yql/

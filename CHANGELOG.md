@@ -1,5 +1,10 @@
-Changelog
----------
+### Changelog
+
+- 1.0.0 (2015-09-28)
+    * fixed some broken method, partially with custom screen scrapper
+    * reorganisation of classes, `YahooFinanceQuery.php` functions as a controller/router class, each method has its own underlying class
+    * stil need to add further testing
+
 - 0.4.0 (2014-06-24)
 
     * made PSR-4 package and added to packagist.org
