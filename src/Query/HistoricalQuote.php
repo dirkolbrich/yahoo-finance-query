@@ -53,6 +53,12 @@ class HistoricalQuote extends Query
             $this->queryParams = 'd';
         }
 
+        // validate symbol
+        if (empty($symbol)) {
+            $this->result = [];
+            return $this;
+        }
+
         if ($this->yql) { // request via yql console
             $data = $this->queryYQL();
         } else { // direct request via .csv
@@ -102,6 +108,10 @@ class HistoricalQuote extends Query
 
         // curl request
         $this->curlRequest($this->queryUrl);
+
+        if ($this->response['status'] = 404) {
+            return $data = [];
+        }
 
         // parse csv
         $result = str_getcsv($this->response['result'], "\n"); //parse rows

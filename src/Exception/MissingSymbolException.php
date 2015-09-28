@@ -16,7 +16,7 @@
  *
  * @trown
  */
-class MissingSymbolsListException extends \InvalidArgumentException
+class MissingSymbolException extends \InvalidArgumentException
 {
 
 }
