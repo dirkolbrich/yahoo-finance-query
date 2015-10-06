@@ -34,15 +34,23 @@ class SymbolSuggest extends Query
     public function query($queryString)
     {
         $this->queryString = $queryString;
-        //set url for callback
-        $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($this->queryString) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
-        //curl request
+
+        // set url for callback
+        $this->baseUrl = 'http://d.yimg.com/aq/autoc?query=';
+        $region = 'region=US';
+        $lang = 'lang=en-US';
+        $this->queryUrl = $this->baseUrl . urlencode($this->queryString) . '&' . $region . '&' . $lang . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
+
+        // deprecated
+        // $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($this->queryString) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
+
+        // curl request
         $this->curlRequest($this->queryUrl);
 
-        //read json
+        // read json
         $json = preg_replace('/.+?({.+}).+/', '$1', $this->response['result']);
 
-        //convert json to array
+        // convert json to array
         $object = json_decode($json);
         $data = $object->ResultSet->Result;
         if ($data) {

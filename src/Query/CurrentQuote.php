@@ -181,11 +181,11 @@ class CurrentQuote extends Query
         $paramString = implode('', array_keys($paramList)); // use only the param keys for csv query
 
         // set request url
-        $this->base_url = 'http://finance.yahoo.com/d/quotes.csv?s=';
-        $this->query_url = $this->base_url . $symbolString . '&f=' . $paramString . '&e=.csv';
+        $this->baseUrl = 'http://finance.yahoo.com/d/quotes.csv?s=';
+        $this->queryUrl = $this->baseUrl . $symbolString . '&f=' . $paramString . '&e=.csv';
 
         // curl request
-        $this->curlRequest($this->query_url);
+        $this->curlRequest($this->queryUrl);
 
         if ($this->response['status'] = 404) {
             return $data = [];
@@ -237,12 +237,12 @@ class CurrentQuote extends Query
         $query_string = 'select ' . $paramString . ' from yahoo.finance.quotes where symbol in (' .$symbolString . ')';
 
         // set request url
-        $this->base_url = 'http://query.yahooapis.com/v1/public/yql?q=';
+        $this->baseUrl = 'http://query.yahooapis.com/v1/public/yql?q=';
         $config = '&format=json&env=http://datatables.org/alltables.env&callback=';
-        $this->query_url = $this->base_url . urlencode($query_string) . $config;
+        $this->queryUrl = $this->baseUrl . urlencode($query_string) . $config;
 
         // curl request
-        $this->curlRequest($this->query_url);
+        $this->curlRequest($this->queryUrl);
 
         if ($this->response['status'] = 404) {
             return $data = [];
