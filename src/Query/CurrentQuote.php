@@ -187,7 +187,7 @@ class CurrentQuote extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
-        if ($this->response['status'] = 404) {
+        if (404 == $this->response['status']) {
             return $data = [];
         }
 
@@ -244,7 +244,7 @@ class CurrentQuote extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
-        if ($this->response['status'] = 404) {
+        if (404 == $this->response['status']) {
             return $data = [];
         }
         

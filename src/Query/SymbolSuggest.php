@@ -47,6 +47,10 @@ class SymbolSuggest extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
+
         // read json
         $json = preg_replace('/.+?({.+}).+/', '$1', $this->response['result']);
 

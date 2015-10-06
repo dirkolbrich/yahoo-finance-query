@@ -71,6 +71,10 @@ class IntraDayQuote extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
+
         // trim response
         $result = ltrim(rtrim($this->response['result'], ' )'), 'finance_charts_json_callback( ');
         //read json

@@ -109,7 +109,7 @@ class HistoricalQuote extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
-        if ($this->response['status'] = 404) {
+        if (404 == $this->response['status']) {
             return $data = [];
         }
 
@@ -165,6 +165,10 @@ class HistoricalQuote extends Query
 
         // curl request
         $this->curlRequest($this->queryUrl);
+
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
 
         // read json
         $object = json_decode($this->response['result']);

@@ -109,6 +109,10 @@ class IndexList extends Query
         //curl request
         $this->curlRequest($this->queryUrl);
 
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
+        
         //parse csv
         $result = str_getcsv($this->response['result'], "\n"); //parse rows
         foreach ($result as &$row) { //parse items in row
@@ -134,6 +138,7 @@ class IndexList extends Query
         }
 
     private function queryYQL() {
-        
+        $data = [];
+        return $data;
     }
 }

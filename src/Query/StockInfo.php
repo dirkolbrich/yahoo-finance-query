@@ -37,6 +37,10 @@ class StockInfo extends Query
         // curl request
         $this->curlRequest($this->queryUrl);
 
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
+
         // parse html
         $dom = new \DOMDocument();
         @$dom->loadHTML($this->response['result']);

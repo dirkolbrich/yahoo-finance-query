@@ -50,6 +50,10 @@ class SectorList extends Query
         //curl request
         $this->curlRequest($this->queryUrl);
 
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
+
         // parse html
         $dom = new \DOMDocument();
         @$dom->loadHTML($this->response['result']);
@@ -100,6 +104,10 @@ class SectorList extends Query
 
         //curl request
         $this->curlRequest($this->queryUrl);
+
+        if (404 == $this->response['status']) {
+            return $data = [];
+        }
 
         //read json
         $object = json_decode($this->response['result'], true);
