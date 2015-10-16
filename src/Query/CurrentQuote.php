@@ -281,10 +281,10 @@ class CurrentQuote extends Query
     protected function setParamList()
     {
         // set list of params
-        $queryParams = array_filter($this->queryParams);
-        if (empty($queryParams)) {
+        if (empty($this->queryParams)) {
             $paramList = $this->quoteParams;
         } else {
+            $queryParams = array_filter($this->queryParams);
             $paramList = array();
             //retrieve params from quoteParam list
             foreach ($queryParams as $param) {
