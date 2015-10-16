@@ -123,7 +123,7 @@ class CurrentQuote extends Query
      * @param array $params - array with query params
      * @return self
      */
-    public function query(array $symbol, array $params = null)
+    public function query(array $symbol, array $params)
     {
         $this->queryString = $symbol;
         $this->queryParams = $params;
