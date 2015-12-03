@@ -1,4 +1,4 @@
-<?php namespace DirkOlbrich\YahooFinanceQuery;
+<?php namespace YahooFinanceQuery;
 
 /**
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
@@ -11,13 +11,13 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\IndexList;
-use DirkOlbrich\YahooFinanceQuery\Query\StockInfo;
-use DirkOlbrich\YahooFinanceQuery\Query\SectorList;
-use DirkOlbrich\YahooFinanceQuery\Query\CurrentQuote;
-use DirkOlbrich\YahooFinanceQuery\Query\IntraDayQuote;
-use DirkOlbrich\YahooFinanceQuery\Query\SymbolSuggest;
-use DirkOlbrich\YahooFinanceQuery\Query\HistoricalQuote;
+use YahooFinanceQuery\Query\IndexList;
+use YahooFinanceQuery\Query\StockInfo;
+use YahooFinanceQuery\Query\SectorList;
+use YahooFinanceQuery\Query\CurrentQuote;
+use YahooFinanceQuery\Query\IntraDayQuote;
+use YahooFinanceQuery\Query\SymbolSuggest;
+use YahooFinanceQuery\Query\HistoricalQuote;
 
 class YahooFinanceQuery
 {

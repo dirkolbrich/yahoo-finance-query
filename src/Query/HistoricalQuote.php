@@ -1,4 +1,4 @@
-<?php namespace DirkOlbrich\YahooFinanceQuery\Query;
+<?php namespace YahooFinanceQuery\Query;
 
 /**
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
@@ -11,11 +11,11 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\Query;
+use YahooFinanceQuery\Query\Query;
 
 /**
-* 
-*/
+ *
+ */
 class HistoricalQuote extends Query
 {
     protected $startDate;
@@ -31,7 +31,6 @@ class HistoricalQuote extends Query
     {
         parent::__construct($yql);
     }
-
 
     /**
      * get historical quotes for provided symbol from yahoo.finance.com, direct query to csv

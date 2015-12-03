@@ -17,9 +17,9 @@
 </head>
 <body>
 <?php
-require './src/YahooFinanceQuery.php';
+require __DIR__ . '/../vendor/autoload.php';
 
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 
 $query = new YahooFinanceQuery;
 ?>

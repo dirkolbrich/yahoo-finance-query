@@ -1,4 +1,4 @@
-<?php namespace DirkOlbrich\YahooFinanceQuery\Exception;
+<?php namespace YahooFinanceQuery\Exception;
 
 /**
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API

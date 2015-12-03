@@ -1,4 +1,4 @@
-<?php namespace DirkOlbrich\YahooFinanceQuery\Query;
+<?php namespace YahooFinanceQuery\Query;
 
  /**
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
@@ -11,7 +11,7 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\Query;
+use YahooFinanceQuery\Query\Query;
 
 /**
 * 
