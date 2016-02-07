@@ -13,6 +13,7 @@
  -->
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>YahooFinanceQuery Example</title>
 </head>
 <body>
@@ -20,7 +21,6 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use YahooFinanceQuery\YahooFinanceQuery;
-
 $query = new YahooFinanceQuery;
 ?>
 
@@ -38,7 +38,10 @@ $query = new YahooFinanceQuery;
 
     <?php
     if (isset($_POST['searchSymbol'])) {
-        $data = $query->symbolSuggest($_POST['string'])->get(); ?>
+        $data = $query->symbolSuggest($_POST['string']);
+        var_dump($data);
+        if ($data['ok']) {
+    ?>
     <table>
         <thead>
             <th>Symbol</th>
@@ -49,19 +52,28 @@ $query = new YahooFinanceQuery;
             <th>Type Display</th>
         </thead>
         <tbody>
-        <?php foreach ($data as $dataEntry) { ?>
+        <?php foreach ($data["symbols"] as $symbol) { ?>
             <tr>
-                <td><?php echo $dataEntry['symbol']; ?></td>
-                <td><?php echo $dataEntry['name']; ?></td>
-                <td><?php echo $dataEntry['exch']; ?></td>
-                <td><?php echo $dataEntry['exchDisp']; ?></td>
-                <td><?php echo $dataEntry['type']; ?></td>
-                <td><?php echo $dataEntry['typeDisp']; ?></td>
+                <td><?php echo $symbol->symbol; ?></td>
+                <td><?php echo $symbol->name; ?></td>
+                <td><?php echo $symbol->exch; ?></td>
+                <td><?php echo $symbol->exchDisp; ?></td>
+                <td><?php echo $symbol->type; ?></td>
+                <td><?php echo $symbol->typeDisp; ?></td>
             </tr>
         <?php } ?>
         </tbody>
     </table>
-    <?php } ?>
+        <?php
+           } else {
+        ?>
+    <p>
+        <?php echo $data["error"];?>
+    </p>
+        <?php            
+            }
+        }
+        ?>
 </div>
 <hr />
 
@@ -83,9 +95,9 @@ $query = new YahooFinanceQuery;
         $param = explode(' ', $_POST['param']);
         if (isset($_POST['getQuoteYQL'])) {
             echo '<p>Query via YQL console.</p>';
-            $data = $query->yql()->quote($symbol, $param)->get();
+            $data = $query->yql()->quote($symbol, $param);
         } else {
-            $data = $query->quote($symbol, $param)->get();
+            $data = $query->quote($symbol, $param);
             echo '<p>Direct query via csv.</p>';
         }
     ?>
@@ -134,10 +146,18 @@ $query = new YahooFinanceQuery;
     <?php
     if (isset($_POST['getHistQuote'])) {
         if (isset($_POST['getHistQuoteYQL'])) {
-            $data = $query->yql()->historicalQuote($_POST['symbol'], $_POST['startDate'], $_POST['endDate'], $_POST['param'])->get();
+            $data = $query->yql()->historicalQuote(
+                $_POST['symbol'],
+                $_POST['startDate'],
+                $_POST['endDate'],
+                $_POST['param']);
             echo '<p>Query via YQL console. Datasets: <b>' . count($data) . '</b></p>';
         } else {
-            $data = $query->historicalQuote($_POST['symbol'], $_POST['startDate'], $_POST['endDate'], $_POST['param'])->get();
+            $data = $query->historicalQuote(
+                $_POST['symbol'],
+                $_POST['startDate'],
+                $_POST['endDate'],
+                $_POST['param']);
             echo '<p>Direct query via csv. Datasets: <b>' . count($data) . '</b></p>';
         }
     ?>
@@ -196,7 +216,7 @@ $query = new YahooFinanceQuery;
         $period = $_POST['period'];
         $param = $_POST['param'];
         echo '<p>Direct query via csv.</p>';
-        $data = $query->intraDay($symbol, $period, $param)->get();
+        $data = $query->intraDay($symbol, $period, $param);
     ?>
     <table>
         <thead>
@@ -231,7 +251,7 @@ $query = new YahooFinanceQuery;
     if (isset($_POST['getStockInfo'])) {
         //strings to array
         //$symbol = explode(' ', $_POST['symbol']);
-        $data = $query->stockInfo($_POST['symbol'])->get(); ?>
+        $data = $query->stockInfo($_POST['symbol']); ?>
     <table>
         <tbody>
         <?php foreach ($data as $key => $val) { ?>
@@ -260,7 +280,7 @@ $query = new YahooFinanceQuery;
     if (isset($_POST['getIndex'])) {
         //strings to array
         $symbol = explode(' ', $_POST['symbol']);
-        $data = $query->indexList($symbol)->get();
+        $data = $query->indexList($symbol);
             foreach ($data as $index) { ?>
                 <p><?php echo $index['symbol']; ?></p>
                 <table>
@@ -296,7 +316,7 @@ $query = new YahooFinanceQuery;
 
     <?php
     if (isset($_POST['getSectors'])) {
-        $data = $query->sectorList()->get();
+        $data = $query->sectorList();
     ?>
         <p>
             <?php foreach ($data as $sector) { ?>

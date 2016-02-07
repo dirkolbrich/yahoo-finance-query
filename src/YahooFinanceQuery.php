@@ -114,10 +114,20 @@ class YahooFinanceQuery
     }
 
     /**
+     * return the result as JSON format
+     * @return self
+     */
+    public function toJson()
+    {
+        $this->toJson = true;
+        return $this;
+    }
+
+    /**
      * get results from the query
      * @return string $data
      */
-    public function get()
+    protected function get()
     {
         // check for raw response
         if ($this->raw) {
@@ -129,18 +139,7 @@ class YahooFinanceQuery
             $this->toJson = false;
             return json_encode($this->query->result);
         }
-        // reset $this->yql
         return $this->query->result;
-    }
-
-    /**
-     * return the result as JSON format
-     * @return self
-     */
-    public function toJson()
-    {
-        $this->toJson = true;
-        return $this;
     }
 
     /**
@@ -153,7 +152,7 @@ class YahooFinanceQuery
     {
         $query = new SymbolSuggest($this->yql);
         $this->query = $query->query($searchString);
-        return $this;
+        return $this->get();
     }
 
     /**
@@ -166,7 +165,7 @@ class YahooFinanceQuery
     {
         $query = new CurrentQuote($this->yql);
         $this->query = $query->query($symbolList, $searchParams);
-        return $this;
+        return $this->get();
     }
 
     /**
@@ -181,7 +180,7 @@ class YahooFinanceQuery
     {
         $query = new HistoricalQuote($this->yql);
         $this->query = $query->query($symbol, $startDate, $endDate, $param);
-        return $this;
+        return $this->get();
     }
 
     /**
@@ -196,7 +195,7 @@ class YahooFinanceQuery
     {
         $query = new IntraDayQuote($this->yql);
         $this->query = $query->query($symbol, $period, $param);
-        return $this;        
+        return $this->get();
     }
 
     /**
@@ -208,7 +207,7 @@ class YahooFinanceQuery
     {
         $query = new StockInfo($this->yql);
         $this->query = $query->query($symbol);
-        return $this;
+        return $this->get();
     }
 
     /**
@@ -220,7 +219,7 @@ class YahooFinanceQuery
     {
         $query = new IndexList($this->yql);
         $this->query = $query->query($symbols);
-        return $this;
+        return $this->get();
     }
 
     /**
@@ -231,6 +230,6 @@ class YahooFinanceQuery
     {
         $query = new SectorList($this->yql);
         $this->query = $query->query();
-        return $this;
+        return $this->get();
     }
 }

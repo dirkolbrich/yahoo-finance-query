@@ -31,14 +31,14 @@ require via `composer.json` in your project root
 
 As simple as that:
 ```php
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 // [...]
 $query = new YahooFinanceQuery;
 ```
 
 or as static:
 ```php
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 // [...]
 YahooFinanceQuery->make();
 ```
@@ -69,31 +69,64 @@ The current config setting can be retrieved with:
 $query->getConfig();
 ```
 
-To retrieve the raw cURL result use `raw()` as addition to the query. This method must be called before the actural query method.
-```php
-$query->raw()->quote()->get();
-```
-
-To force the query via the YQL api (if possible), use the `yql()` method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often with truncated results.
-```php
-$query->yql()->quote()->get();
-```
-
 ### Usage
 
-Querys are chainable. Use the `get()` method to to retrieve the results.
+To retrieve the results simple call the appropiate method.
 ```php
-$data = $query->method()->get();
+$data = $query->method();
+```
+
+To change the return type to json at runtime use `toJson()` as addition to the query. This method must be called before the actural query method.
+```php
+$query->toJson()->method();
+```
+
+To retrieve the raw cURL result use `raw()` as addition to the query. This method must be called before the actural query method.
+```php
+$query->raw()->method();
+```
+
+To force the query via the YQL api (if possible), use the `yql()` method within the query string. This method must be called before the actural query method. The default is set to not use YQL, as I think YQL querys are unreliable and often return truncated results.
+```php
+$query->yql()->method();
 ```
 
 The following query methods are available:
 
 1. `symbolSuggest($string)`
 
-    Query for symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback
+    Query for a symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback
     ```php
     $string = 'basf';
-    $data = $query->symbolSuggest($string)->get();
+    $data = $query->symbolSuggest($string);
+    ```
+
+    Returns a formated array:
+    ```php
+    array[
+        'ok' => true,
+        'status' => 200,
+        'query' => 'basf',
+        'symbols' => array[
+            0 => object[
+                'symbol' => 'BAS.DE',
+                'name' => 'BASF SE',
+                'exch' => 'GER',
+                'type' => 'S',
+                'exchDisp' => 'XETRA',
+                'typeDisp' => 'Equity',
+            ],
+            // any number of following results
+    ];
+    ```
+
+    If no symbol is found, the query will return a 404 error:
+    ```php
+    array[
+        'ok' => false,
+        'status' => 404,
+        'error' => 'Could not find symbol for "basf"',
+    ];
     ```
 
 2. `quote(array $symbol [, array $params])`
@@ -102,14 +135,14 @@ The following query methods are available:
 
     The passed parameter `$symbol` must be an array. Several symbols can be passed.
 
-    The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See as reference the `$quoteParams` variable in the class definition. If `$params` is empty, the query will use all possible params.
+    The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See the `$quoteParams` variable in the class definition as reference . If `$params` is empty, the query will use all possible params.
 
     The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.
 
     ```php
     $symbol = array('bas.de');
     $params = array('LastTradePriceOnly', 'x', 'c1');
-    $data = $query->quote($symbol, $params)->get();
+    $data = $query->quote($symbol, $params);
     ```
 
 3. `historicalQuote(array $symbol [, $startDate, $endDate, $param])`
@@ -127,7 +160,7 @@ The following query methods are available:
     $startDate = 2013-07-26;
     $endDate = 2014-01-06;
     $param = 'd';
-    $data = $query->historicalQuote($symbol, $startDate, $endDate, $param)->get();
+    $data = $query->historicalQuote($symbol, $startDate, $endDate, $param);
     ```
     I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible via YQL.
 
@@ -142,7 +175,7 @@ The following query methods are available:
     ```php
     $symbol = 'bas.de';
     $period = '5d';
-    $data = $query->intraDay($symbol, $period)->get();
+    $data = $query->intraDay($symbol, $period);
     ```
 
 5. `stockInfo($symbol)`
@@ -151,7 +184,7 @@ The following query methods are available:
 
     ```php
     $symbol = 'bas.de';
-    $data = $query->stockInfo($symbol)->get();
+    $data = $query->stockInfo($symbol);
     ```
 
 6. `indexList(array $symbol)`
@@ -162,7 +195,7 @@ The following query methods are available:
 
     ```php
     $symbol = array('^GDAXI');
-    $data = $query->indexList($symbol)->get();
+    $data = $query->indexList($symbol);
     ```
 
 7. `sectorList()`
@@ -172,7 +205,7 @@ The following query methods are available:
     This function is static without any params.
 
     ```php
-    $data = $query->sectorList()->get();
+    $data = $query->sectorList();
     ```
 
     Which returns an array in this form:
