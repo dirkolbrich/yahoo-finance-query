@@ -16,14 +16,44 @@
  */
 class Query
 {
+    /**
+     * @var string
+     */
     protected $yql;
+
+    /**
+     * @var string
+     */
     protected $queryString;
+
+    /**
+     * @var string
+     */
     protected $queryParams;
+
+    /**
+     * @var string
+     */
     protected $baseUrl;
+
+    /**
+     * @var string
+     */
     protected $queryUrl;
+
+    /**
+     * @var string
+     */
     public $result;
+
+    /**
+     * @var string
+     */
     public $response;
 
+    /**
+     * @param string $yql
+     */
     function __construct($yql)
     {
         $this->yql = $yql;

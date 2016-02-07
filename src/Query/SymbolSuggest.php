@@ -19,16 +19,18 @@ use YahooFinanceQuery\Query\Query;
 class SymbolSuggest extends Query
 {
 
+    /**
+     * @param string $yql
+     */
     public function __construct($yql)
     {
         parent::__construct($yql);
     }
 
-
     /**
      * get a list of stocks with symbol and market for provided search string
      * from yahoo.finance.com's stock symbol autosuggest callback
-     * @param string $string - the name/string to search for
+     * @param string $queryString - the name/string to search for
      * @return self
      */
     public function query($queryString)
@@ -39,40 +41,51 @@ class SymbolSuggest extends Query
         $this->baseUrl = 'http://d.yimg.com/aq/autoc?query=';
         $region = 'region=US';
         $lang = 'lang=en-US';
-        $this->queryUrl = $this->baseUrl . urlencode($this->queryString) . '&' . $region . '&' . $lang . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
+        $this->queryUrl = $this->baseUrl
+            . urlencode($this->queryString) . '&' . $region . '&' . $lang
+            . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
 
         // deprecated
-        // $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($this->queryString) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
+        // $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' 
+        //  .urlencode($this->queryString)
+        //  .'&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
 
         // curl request
         $this->curlRequest($this->queryUrl);
 
-        if (404 == $this->response['status']) {
-            return $data = [];
+        // handel curl errors
+        if ($this->response['errno']) {
+            $result = array();
+            $result["ok"] = false;
+            $result["status"] = 500;
+            $result["query"] = $this->queryString;
+            $result["errno"] = $this->response['errno'];
+            $result["error"] = $this->response['error'];
+            $this->result = $result;
+            return $this;
         }
 
         // read json
         $json = preg_replace('/.+?({.+}).+/', '$1', $this->response['result']);
-
         // convert json to array
-        $object = json_decode($json);
-        $data = $object->ResultSet->Result;
+        $response = json_decode($json);
+        $data = $response->ResultSet->Result;
         if ($data) {
-            $i = 0;
-            $list = array();
-            foreach($data as $suggest) {
-                $list[$i]['symbol']     = (empty($suggest->symbol) ? null : $suggest->symbol);
-                $list[$i]['name']       = (empty($suggest->name) ? null : $suggest->name);
-                $list[$i]['exch']       = (empty($suggest->exch) ? null : $suggest->exch);
-                $list[$i]['type']       = (empty($suggest->type) ? null : $suggest->type);
-                $list[$i]['exchDisp']   = (empty($suggest->exchDisp) ? null : $suggest->exchDisp);
-                $list[$i]['typeDisp']   = (empty($suggest->typeDisp) ? null : $suggest->typeDisp);
-                $i++;
-            }
-            $this->result = $list;
+            $result = array();
+            $result["ok"] = true;
+            $result["status"] = 200;
+            $result["query"] = $this->queryString;
+            $result["symbols"] = $data;
+
+            $this->result = $result;
         } else {
             //no data found
-            $this->result = null;
+            $result = array();
+            $result["ok"] = false;
+            $result["status"] = 404;
+            $result["query"] = $this->queryString;
+            $result["error"] = "Could not find symbol for '" . $this->queryString . "'";
+            $this->result = $result;
         }
         return $this;
     }
