@@ -1,5 +1,6 @@
 ToDo
 ----
+- [ ] unify predictable return array
 - [ ] get stock by ISIN
 - [ ] get corresponding industry member for symbol
 - [ ] get currency exchange rates

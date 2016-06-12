@@ -1,7 +1,5 @@
 <?php
-
 require __DIR__.'/vendor/autoload.php';
-
-include 'example/example.php';
+require __DIR__.'/example/example.php';
 
         
