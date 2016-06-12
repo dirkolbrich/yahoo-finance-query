@@ -31,14 +31,14 @@ require via `composer.json` in your project root
 
 As simple as that:
 ```php
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 // [...]
 $query = new YahooFinanceQuery;
 ```
 
 or as static:
 ```php
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 // [...]
 YahooFinanceQuery->make();
 ```

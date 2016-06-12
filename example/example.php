@@ -19,7 +19,7 @@
 <?php
 require './src/YahooFinanceQuery.php';
 
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 
 $query = new YahooFinanceQuery;
 ?>

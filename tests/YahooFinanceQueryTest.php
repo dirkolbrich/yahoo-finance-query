@@ -1,6 +1,6 @@
 <?php
 
-use DirkOlbrich\YahooFinanceQuery\YahooFinanceQuery;
+use YahooFinanceQuery\YahooFinanceQuery;
 
 class YahooFinanceQueryTest extends PHPUnit_Framework_TestCase {
 
