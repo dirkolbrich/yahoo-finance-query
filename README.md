@@ -211,6 +211,7 @@ Blog post from Joseph D. Purcell with an overview over finance API'S is a good e
 
 www.gummy-stuff.org explains the Yahoo Finance .csv API
 * http://www.gummy-stuff.org/Yahoo-data.htm
+Update on this: Yahoo harrased Mr. Ponzo about his documentation of a publicy available API and claimed some infringement on their TOS. But thanks to the internet archive, the last snapshot of this site is available at http://web.archive.org/web/20140527154306/http://www.gummy-stuff.org/Yahoo-data.htm
 
 An overview over different api endpoints by Matthias Brusdeylins (german)
 * http://brusdeylins.info/projects/yahoo-finance-api/
