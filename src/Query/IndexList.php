@@ -1,35 +1,31 @@
 <?php namespace DirkOlbrich\YahooFinanceQuery\Query;
 
+    /**
+     * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
+     *
+     * @author      Dirk Olbrich <mail@dirkolbrich.de>, Ralf Geisthardt<RalfGe@ihr-it-projekt.de>
+     * @copyright   2013-2015 Dirk Olbrich
+     * @link        https://github.com/dirkolbrich/YahooFinanceQuery
+     * @license     MIT
+     * @version     1.0.0
+     * @package     YahooFinanceQuery
+     */
+
 /**
- * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
+ * Class IndexList
  *
- * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013-2015 Dirk Olbrich
- * @link        https://github.com/dirkolbrich/YahooFinanceQuery
- * @license     MIT
- * @version     1.0.0
- * @package     YahooFinanceQuery
- */
-
-use DirkOlbrich\YahooFinanceQuery\Query\Query;
-
-/**
- * 
+ * @package DirkOlbrich\YahooFinanceQuery\Query
  */
 class IndexList extends Query
 {
-    
-    function __construct($yql)
-    {
-        parent::__construct($yql);
-    }
-
     /**
      * get list of component for indices symbol from yahoo.finance.com
      *
-     * @param mixed $symbol
+     * @param array $symbol
+     *
+     * @return $this
      */
-    function query(array $symbol)
+    public function query(array $symbol)
     {
         $this->queryString = $symbol;
 
@@ -37,108 +33,91 @@ class IndexList extends Query
             $data = $this->queryYQL();
         } else { // direct request via .csv
             $data = $this->queryDirect();
-            // $data = $this->queryCSV($symbols); // query via csv is broken on finance.yahoom.com
         }
 
         $this->result = $data;
+
         return $this;
     }
 
     /**
      * query finance.yahoo.com via screen scrapper
+     *
+     * @return array
      */
     private function queryDirect()
     {
+        $data = [];
+
         foreach ($this->queryString as $indexSymbol) {
-
             //set request url
-            $this->baseUrl = 'http://finance.yahoo.com/q/cp?s=';
-            $config = '+Components';
-            $this->queryUrl = $this->baseUrl . urlencode($indexSymbol) . $config;
-
+            $this->queryUrl = sprintf(
+                'https://query2.finance.yahoo.com/v10/finance/quoteSummary/%s?modules=components&corsDomain=finance.yahoo.com',
+                urlencode($indexSymbol)
+            );
             //curl request
             $this->curlRequest($this->queryUrl);
-            
-            // parse html
-            $dom = new \DOMDocument();
-            @$dom->loadHTML($this->response['result']);
-            $dom->preserveWhiteSpace = false;
-            $body = new \DOMXPath($dom);
 
-            // query DOM for key
-            $keyList = [];
-            foreach ($body->query('//table[@id="yfncsumtab"]//table[@class="yfnc_tableout1"]//th[@class="yfnc_tablehead1"]') as $node) {
-                $keyList[] = str_replace(' ', '', rtrim($node->nodeValue, ':'));
-            }
+            $result = json_decode($this->response['result'], true);
 
-            // query dom for entrys
             $index = [];
-            $table = $body->query('//table[@id="yfncsumtab"]//table[@class="yfnc_tableout1"]//table//tr');
-
-            for ( $i = 1; $i < $table->length; $i++ ) {
-                $hit = $body->query('.//td[@class="yfnc_tabledata1"]', $table->item($i));
-                // get values from nodes
-                $symbol = $hit->item(0)->nodeValue;
-                $name = $hit->item(1)->nodeValue;
-                // make array
-                $temp = [ $keyList[0] => $symbol, $keyList[1] => $name ];
-                $index[] = $temp;
+            if ($this->componentsExists($result)) {
+                $index = $this->getComponents($result);
             }
 
             // set array
-            $indexData['symbol'] = $indexSymbol;
+            $indexData['symbol']     = $indexSymbol;
             $indexData['components'] = $index;
-            $data[] = $indexData;
+            $data[]                  = $indexData;
         }
 
         return $data;
     }
 
-    private function queryCSV()
+    /**
+     * @return array
+     */
+    private function queryYQL()
     {
-        foreach ($this->queryString as $indexSymbol) {
-            $symbolList[] = urlencode('@' . $indexSymbol);
-        }
-        $symbolString = implode('+', $symbolList);
+        return [];
+    }
 
-        //set request url
-        $this->baseUrl = 'http://download.finance.yahoo.com/d/quotes.csv?s=';
-        $config = '&f=snx&e=.csv';
-        $this->queryUrl = $this->baseUrl . $symbolString . $config;
-
-        //curl request
-        $this->curlRequest($this->queryUrl);
-
-        if (404 == $this->response['status']) {
-            return $data = [];
-        }
-        
-        //parse csv
-        $result = str_getcsv($this->response['result'], "\n"); //parse rows
-        foreach ($result as &$row) { //parse items in row
-            $row = str_getcsv($row);
-        }
-        unset($row);
-        //split up data if multiple symbols are requested
-        $data = [];
-        $resultHolder = [];
-        reset($symbol);
-        foreach ($result as $resultKey => $resultVal) {
-            //check if array has empty element = delimiter
-            if ((count($resultVal) == 1) and ($resultVal[0] === null)) {
-                $data[current($symbol)] = $resultHolder; // dump $resultHolder to data array
-                $resultHolder = []; // reset $resultHolder
-                next($symbol);
-            } else {
-                $resultHolder[] = $resultVal;
-            }
+    /**
+     * @param $result
+     *
+     * @return bool
+     */
+    private function componentsExists($result)
+    {
+        if (array_key_exists('quoteSummary', $result)
+            && array_key_exists('result', $result['quoteSummary'])
+            && array_key_exists(0, $result['quoteSummary']['result'])
+            && array_key_exists(
+                'components',
+                $result['quoteSummary']['result'][0]
+            )
+            && is_array($result['quoteSummary']['result'][0]['components'])
+            && array_key_exists(
+                'components',
+                $result['quoteSummary']['result'][0]['components']
+            )
+            && is_array(
+                $result['quoteSummary']['result'][0]['components']['components']
+            )
+        ) {
+            return true;
         }
 
-        return $data;
-        }
+        return false;
+    }
 
-    private function queryYQL() {
-        $data = [];
-        return $data;
+    /**
+     * @param $result
+     *
+     * @return array
+     */
+    private function getComponents($result)
+    {
+        return $result['quoteSummary']['result'][0]['components']['components'];
     }
 }

@@ -11,34 +11,39 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\IndexList;
-use DirkOlbrich\YahooFinanceQuery\Query\StockInfo;
-use DirkOlbrich\YahooFinanceQuery\Query\SectorList;
 use DirkOlbrich\YahooFinanceQuery\Query\CurrentQuote;
-use DirkOlbrich\YahooFinanceQuery\Query\IntraDayQuote;
-use DirkOlbrich\YahooFinanceQuery\Query\SymbolSuggest;
 use DirkOlbrich\YahooFinanceQuery\Query\HistoricalQuote;
+use DirkOlbrich\YahooFinanceQuery\Query\IndexList;
+use DirkOlbrich\YahooFinanceQuery\Query\IntraDayQuote;
+use DirkOlbrich\YahooFinanceQuery\Query\SectorList;
+use DirkOlbrich\YahooFinanceQuery\Query\StockInfo;
+use DirkOlbrich\YahooFinanceQuery\Query\SymbolSuggest;
 
 class YahooFinanceQuery
 {
     /**
      * @var array
      */
-    protected $config = array(
+    protected $config = [
         'returnType' => 'array', // 'array' or 'json'
-        );
+    ];
 
     protected $query;
+
     protected $raw = false;
+
     protected $yql = false;
+
     protected $toJson = false;
 
     /**
      * constructor with optional config param
+     *
      * @param array $config - key => value for configuration
+     *
      * @return void
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         if (!empty($config)) {
             $this->config($config);
@@ -49,9 +54,10 @@ class YahooFinanceQuery
      * creator with optional config param
      *
      * @param array $config - key => value for configuration
+     *
      * @return YahooFinanceQuery $query
      */
-    public static function make(array $config = array())
+    public static function make(array $config = [])
     {
         return new YahooFinanceQuery($config);
     }
@@ -60,15 +66,17 @@ class YahooFinanceQuery
      * configurator
      *
      * @param array $config - key => value for configuration
+     *
      * @return self
      */
-    public function config(array $config = array())
+    public function config(array $config = [])
     {
         foreach ($config as $key => $setting) {
             if (array_key_exists($key, $this->config)) {
                 $this->config[$key] = $setting;
             }
         }
+
         return $this;
     }
 
@@ -90,6 +98,7 @@ class YahooFinanceQuery
     public function raw()
     {
         $this->raw = true;
+
         return $this;
     }
 
@@ -101,6 +110,7 @@ class YahooFinanceQuery
     public function yql()
     {
         $this->yql = true;
+
         return $this;
     }
 
@@ -114,13 +124,16 @@ class YahooFinanceQuery
         // check for raw response
         if ($this->raw) {
             $this->raw = false;
+
             return $this->query->response;
         }
         // check returnType
         if ($this->config['returnType'] == 'json' or ($this->toJson)) {
             $this->toJson = false;
+
             return json_encode($this->query->result);
         }
+
         // reset $this->yql
         return $this->query->result;
     }
@@ -133,6 +146,7 @@ class YahooFinanceQuery
     public function toJson()
     {
         $this->toJson = true;
+
         return $this;
     }
 
@@ -141,11 +155,12 @@ class YahooFinanceQuery
      * from yahoo.finance.com's stock symbol autosuggest callback
      *
      * @param string $searchString - the name/string to search for
+     *
      * @return self
      */
     public function symbolSuggest($searchString)
     {
-        $query = new SymbolSuggest($this->yql);
+        $query       = new SymbolSuggest($this->yql);
         $this->query = $query->query($searchString);
 
         return $this;
@@ -154,13 +169,14 @@ class YahooFinanceQuery
     /**
      * get stock quotes for provided symbols from yahoo.finance.com
      *
-     * @param array $symbolList - array with symbol/s
+     * @param array $symbolList   - array with symbol/s
      * @param array $searchParams - array with query params
+     *
      * @return self
      */
     public function quote(array $symbolList, array $searchParams = null)
     {
-        $query = new CurrentQuote($this->yql);
+        $query       = new CurrentQuote($this->yql);
         $this->query = $query->query($symbolList, $searchParams);
 
         return $this;
@@ -171,12 +187,16 @@ class YahooFinanceQuery
      *
      * @param string $symbol
      * @param string $startDate - yyyy-mm-dd
-     * @param string $endDate - yyyy-mm-dd
-     * @param string $param - type of data
+     * @param string $endDate   - yyyy-mm-dd
+     * @param string $param     - type of data
      */
-    function historicalQuote($symbol, $startDate = '', $endDate = '', $param = 'd')
-    {
-        $query = new HistoricalQuote($this->yql);
+    function historicalQuote(
+        $symbol,
+        $startDate = '',
+        $endDate = '',
+        $param = 'd'
+    ) {
+        $query       = new HistoricalQuote($this->yql);
         $this->query = $query->query($symbol, $startDate, $endDate, $param);
 
         return $this;
@@ -187,15 +207,16 @@ class YahooFinanceQuery
      *
      * @param string $symbol
      * @param string $param - type of data
+     *
      * @return array $quoteList - array with quotes
      * @return self
      */
     function intraDay($symbol, $period = '1d', $param = 'quote')
     {
-        $query = new IntraDayQuote($this->yql);
+        $query       = new IntraDayQuote($this->yql);
         $this->query = $query->query($symbol, $period, $param);
 
-        return $this;        
+        return $this;
     }
 
     /**
@@ -205,7 +226,7 @@ class YahooFinanceQuery
      */
     function stockInfo($symbol)
     {
-        $query = new StockInfo($this->yql);
+        $query       = new StockInfo($this->yql);
         $this->query = $query->query($symbol);
 
         return $this;
@@ -218,20 +239,20 @@ class YahooFinanceQuery
      */
     function indexList(array $symbols)
     {
-        $query = new IndexList($this->yql);
+        $query       = new IndexList($this->yql);
         $this->query = $query->query($symbols);
 
         return $this;
     }
 
     /**
-    *   get full list of sectors with corresponding industries from yahoo.finance.com
-    *
-    *   @return self
-    */
+     *   get full list of sectors with corresponding industries from yahoo.finance.com
+     *
+     * @return self
+     */
     function sectorList()
     {
-        $query = new SectorList($this->yql);
+        $query       = new SectorList($this->yql);
         $this->query = $query->query();
 
         return $this;

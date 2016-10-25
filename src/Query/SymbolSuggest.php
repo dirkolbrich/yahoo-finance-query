@@ -11,24 +11,18 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\Query;
-
 /**
-* 
-*/
+ *
+ */
 class SymbolSuggest extends Query
 {
-
-    public function __construct($yql)
-    {
-        parent::__construct($yql);
-    }
-
 
     /**
      * get a list of stocks with symbol and market for provided search string
      * from yahoo.finance.com's stock symbol autosuggest callback
+     *
      * @param string $string - the name/string to search for
+     *
      * @return self
      */
     public function query($queryString)
@@ -36,10 +30,12 @@ class SymbolSuggest extends Query
         $this->queryString = $queryString;
 
         // set url for callback
-        $this->baseUrl = 'http://d.yimg.com/aq/autoc?query=';
-        $region = 'region=US';
-        $lang = 'lang=en-US';
-        $this->queryUrl = $this->baseUrl . urlencode($this->queryString) . '&' . $region . '&' . $lang . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
+        $this->baseUrl  = 'http://d.yimg.com/aq/autoc?query=';
+        $region         = 'region=US';
+        $lang           = 'lang=en-US';
+        $this->queryUrl = $this->baseUrl . urlencode(
+                $this->queryString
+            ) . '&' . $region . '&' . $lang . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
 
         // deprecated
         // $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($this->queryString) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
@@ -56,17 +52,17 @@ class SymbolSuggest extends Query
 
         // convert json to array
         $object = json_decode($json);
-        $data = $object->ResultSet->Result;
+        $data   = $object->ResultSet->Result;
         if ($data) {
-            $i = 0;
-            $list = array();
-            foreach($data as $suggest) {
-                $list[$i]['symbol']     = (empty($suggest->symbol) ? null : $suggest->symbol);
-                $list[$i]['name']       = (empty($suggest->name) ? null : $suggest->name);
-                $list[$i]['exch']       = (empty($suggest->exch) ? null : $suggest->exch);
-                $list[$i]['type']       = (empty($suggest->type) ? null : $suggest->type);
-                $list[$i]['exchDisp']   = (empty($suggest->exchDisp) ? null : $suggest->exchDisp);
-                $list[$i]['typeDisp']   = (empty($suggest->typeDisp) ? null : $suggest->typeDisp);
+            $i    = 0;
+            $list = [];
+            foreach ($data as $suggest) {
+                $list[$i]['symbol']   = (empty($suggest->symbol) ? null : $suggest->symbol);
+                $list[$i]['name']     = (empty($suggest->name) ? null : $suggest->name);
+                $list[$i]['exch']     = (empty($suggest->exch) ? null : $suggest->exch);
+                $list[$i]['type']     = (empty($suggest->type) ? null : $suggest->type);
+                $list[$i]['exchDisp'] = (empty($suggest->exchDisp) ? null : $suggest->exchDisp);
+                $list[$i]['typeDisp'] = (empty($suggest->typeDisp) ? null : $suggest->typeDisp);
                 $i++;
             }
             $this->result = $list;
@@ -74,6 +70,7 @@ class SymbolSuggest extends Query
             //no data found
             $this->result = null;
         }
+
         return $this;
     }
 }

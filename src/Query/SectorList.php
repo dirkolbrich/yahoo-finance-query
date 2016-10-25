@@ -11,25 +11,19 @@
  * @package     YahooFinanceQuery
  */
 
-use DirkOlbrich\YahooFinanceQuery\Query\Query;
-
 /**
- * 
+ *
  */
 class SectorList extends Query
 {
-    
-    function __construct($yql)
-    {
-        parent::__construct($yql);
-    }
 
     /**
-    *   get full list of sectors with corresponding industries from yahoo.finance.com
-    *
-    *   @return array $sectorsList - array with sectors
-    */
-    public function query() {
+     *   get full list of sectors with corresponding industries from yahoo.finance.com
+     *
+     * @return array $sectorsList - array with sectors
+     */
+    public function query()
+    {
         // query via YQL console ist broken due to parsing error in yql statement
         // if ($this->yql) { // request via yql console
         //     $data = $this->queryYQL();
@@ -39,12 +33,14 @@ class SectorList extends Query
         $data = $this->queryDirect();
 
         $this->result = $data;
+
         return $this;
     }
 
-    private function queryDirect() {
+    private function queryDirect()
+    {
         //set request url
-        $this->baseUrl = 'http://biz.yahoo.com/ic/ind_index.html';
+        $this->baseUrl  = 'http://biz.yahoo.com/ic/ind_index.html';
         $this->queryUrl = $this->baseUrl;
 
         //curl request
@@ -58,31 +54,36 @@ class SectorList extends Query
         $dom = new \DOMDocument();
         @$dom->loadHTML($this->response['result']);
         $dom->preserveWhiteSpace = false;
-        $body = new \DOMXPath($dom);
+        $body                    = new \DOMXPath($dom);
 
         // $body->query('//td[@width=\'50%\']//table//tr//td[@colspan=\'2\']//b')
 
         // query dom for sector names
         $sectorList = [];
-        $i = 0;
+        $i          = 0;
         foreach ($body->query('//td[@width=\'50%\']//table//tr') as $node) {
-            if ($node->firstChild->hasAttribute('colspan') && strlen($node->firstChild->nodeValue) > 0) {
+            if ($node->firstChild->hasAttribute('colspan') && strlen(
+                    $node->firstChild->nodeValue
+                ) > 0
+            ) {
                 $sectorList[$i]['name'] = $node->firstChild->nodeValue;
                 $i++;
             } elseif ($node->firstChild->hasAttribute('width')) {
                 $name = $node->lastChild->nodeValue;
 
-                $href = $node->lastChild->firstChild->firstChild->getAttribute('href');
+                $href = $node->lastChild->firstChild->firstChild->getAttribute(
+                    'href'
+                );
                 preg_match("/(?P<id>\d+)\.html$/", $href, $output_array);
                 $id = $output_array['id'];
 
                 $industry = [
-                    'name'  => $name,
-                    'id'    => $id,
+                    'name' => $name,
+                    'id'   => $id,
                 ];
 
                 // attach to array
-                $k = $i - 1;
+                $k                              = $i - 1;
                 $sectorList[$k]['industries'][] = $industry;
             }
         }
@@ -98,8 +99,8 @@ class SectorList extends Query
         //set yql query
         $yql_query = 'select * from yahoo.finance.sectors';
         //set request url
-        $this->baseUrl = 'http://query.yahooapis.com/v1/public/yql?q=';
-        $config = '&format=json&env=store://datatables.org/alltableswithkeys&callback=';
+        $this->baseUrl  = 'http://query.yahooapis.com/v1/public/yql?q=';
+        $config         = '&format=json&env=store://datatables.org/alltableswithkeys&callback=';
         $this->queryUrl = $this->baseUrl . rawurlencode($yql_query) . $config;
 
         //curl request
@@ -124,7 +125,7 @@ class SectorList extends Query
             //sanitize data for sector with single industry
             foreach ($data as $key => $sector) {
                 if (!is_array($sector['industries'][0])) {
-                    $data[$key]['industries'] = array($sector['industries']);
+                    $data[$key]['industries'] = [$sector['industries']];
                 }
             }
         }
