@@ -61,6 +61,7 @@ class IndexList extends Query
             $result = json_decode($this->response['result'], true);
 
             $index = [];
+
             if ($this->componentsExists($result)) {
                 $index = $this->getComponents($result);
             }
@@ -89,9 +90,13 @@ class IndexList extends Query
      */
     private function componentsExists($result)
     {
-        if (array_key_exists('quoteSummary', $result)
+        if (is_array($result)
+            && array_key_exists('quoteSummary', $result)
+            && is_array($result['quoteSummary'])
             && array_key_exists('result', $result['quoteSummary'])
+            && is_array($result['quoteSummary']['result'])
             && array_key_exists(0, $result['quoteSummary']['result'])
+            && is_array($result['quoteSummary']['result'][0])
             && array_key_exists(
                 'components',
                 $result['quoteSummary']['result'][0]
