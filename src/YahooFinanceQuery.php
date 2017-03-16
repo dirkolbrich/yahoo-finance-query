@@ -4,7 +4,7 @@
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
  *
  * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013-2015 Dirk Olbrich
+ * @copyright   2013-2017 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     1.0.0

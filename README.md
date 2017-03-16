@@ -9,7 +9,7 @@ A PHP class to query the Yahoo Finance API.
 - [historicalQuote()](#historical-quote) - query historical quotes for single symbol
 - [intraDay()](#intra-day) - query intraday quotes for single symbol
 - [stockInfo()](#stock-info) - query basic stock info
-- [indexList()](#index-list) - query list of related stocks for index symbols
+- [indexList()](#indsex-list) - query list of related stocks for index symbols
 - [sectorList()](#sector-list) - query full list of sectors with related industries
 
 ## Example
@@ -143,7 +143,7 @@ array[
 ];
 ```
 
-If the query was invalid, the query will return a 404 error:
+If the query was invalid, the query will return an error:
 ```php
 array[
     'ok' => false,

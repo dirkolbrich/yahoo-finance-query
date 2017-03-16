@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- 
+<!--
 /**
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
  *
  * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013-2015 Dirk Olbrich
+ * @copyright   2013-2017 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     1.0.0
@@ -22,7 +22,6 @@ require './src/YahooFinanceQuery.php';
 
 use YahooFinanceQuery\YahooFinanceQuery;
 
-use YahooFinanceQuery\YahooFinanceQuery;
 $query = new YahooFinanceQuery;
 ?>
 
@@ -40,9 +39,9 @@ $query = new YahooFinanceQuery;
 
     <?php
     if (isset($_POST['searchSymbol'])) {
-        $data = $query->symbolSuggest($_POST['string']);
-        var_dump($data);
-        if ($data['ok']) {
+        $result = $query->symbolSuggest($_POST['string']);
+        // var_dump($result);
+        if ($result['ok']) {
     ?>
     <table>
         <thead>
@@ -54,14 +53,14 @@ $query = new YahooFinanceQuery;
             <th>Type Display</th>
         </thead>
         <tbody>
-        <?php foreach ($data["symbols"] as $symbol) { ?>
+        <?php foreach ($result["data"] as $symbol) { ?>
             <tr>
-                <td><?php echo $symbol->symbol; ?></td>
-                <td><?php echo $symbol->name; ?></td>
-                <td><?php echo $symbol->exch; ?></td>
-                <td><?php echo $symbol->exchDisp; ?></td>
-                <td><?php echo $symbol->type; ?></td>
-                <td><?php echo $symbol->typeDisp; ?></td>
+                <td><?php echo $symbol['attributes']['symbol']; ?></td>
+                <td><?php echo $symbol['attributes']['name']; ?></td>
+                <td><?php echo $symbol['attributes']['exch']; ?></td>
+                <td><?php echo $symbol['attributes']['exchDisplay']; ?></td>
+                <td><?php echo $symbol['attributes']['type']; ?></td>
+                <td><?php echo $symbol['attributes']['typeDisplay']; ?></td>
             </tr>
         <?php } ?>
         </tbody>
@@ -70,9 +69,9 @@ $query = new YahooFinanceQuery;
            } else {
         ?>
     <p>
-        <?php echo $data["error"];?>
+        <?php echo $result["errors"];?>
     </p>
-        <?php            
+        <?php
             }
         }
         ?>
@@ -122,7 +121,7 @@ $query = new YahooFinanceQuery;
         </table>
         <?php } else { ?>
         <p>No Data found.</p>
-        <?php } ?>        
+        <?php } ?>
     <?php } ?>
 </div>
 <hr />
@@ -148,34 +147,45 @@ $query = new YahooFinanceQuery;
     <?php
     if (isset($_POST['getHistQuote'])) {
         if (isset($_POST['getHistQuoteYQL'])) {
-            $data = $query->yql()->historicalQuote(
+            $result = $query->yql()->historicalQuote(
                 $_POST['symbol'],
                 $_POST['startDate'],
                 $_POST['endDate'],
                 $_POST['param']);
-            echo '<p>Query via YQL console. Datasets: <b>' . count($data) . '</b></p>';
+            echo '<p>Query via YQL console. Datasets: <b>' . count($result['data']) . '</b></p>';
         } else {
-            $data = $query->historicalQuote(
+            $result = $query->historicalQuote(
                 $_POST['symbol'],
                 $_POST['startDate'],
                 $_POST['endDate'],
                 $_POST['param']);
-            echo '<p>Direct query via csv. Datasets: <b>' . count($data) . '</b></p>';
+            echo '<p>Direct query via csv. Datasets: <b>' . count($result['data']) . '</b></p>';
         }
     ?>
-        <?php if (!empty($data)) { ?>
+        <?php if (!empty($result['data'])) { ?>
+            <p>Historical quotes for <?php echo $result['meta']['query']?></p>
             <table>
                 <thead>
-                    <?php foreach ($data[0] as $dataKey => $dataEntry) { ?>
-                        <th><?php echo $dataKey; ?></th>
-                    <?php } ?>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>Close</th>
+                    <th>Adjusted Close</th>
+                    <th>Volume</th>
                 </thead>
                 <tbody>
-                <?php foreach ($data as $dataKey => $dataEntry) { ?>
+                <?php foreach ($result['data'] as $quote) { ?>
                     <tr>
-                    <?php foreach ($dataEntry as $key => $dataSet) { ?>
-                        <td><?php echo $dataSet; ?></td>
-                    <?php } ?>
+                        <td><?php echo $quote['id']; ?></td>
+                        <td><?php echo $quote['attributes']['date']; ?></td>
+                        <td><?php echo $quote['attributes']['open']; ?></td>
+                        <td><?php echo $quote['attributes']['high']; ?></td>
+                        <td><?php echo $quote['attributes']['low']; ?></td>
+                        <td><?php echo $quote['attributes']['close']; ?></td>
+                        <td><?php echo $quote['attributes']['adjClose']; ?></td>
+                        <td><?php echo $quote['attributes']['volume']; ?></td>
                     </tr>
                 <?php } ?>
                 </tbody>

@@ -4,7 +4,7 @@
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
  *
  * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013-2015 Dirk Olbrich
+ * @copyright   2013-2017 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     1.0.0
@@ -14,16 +14,18 @@
 use YahooFinanceQuery\Queries\Query;
 
 /**
-* 
+*
 */
 class SymbolSuggest extends Query
 {
-
-    public function __construct($yql)
+    /**
+     * constructor with $yql param
+     * @param bool $yql - setting if YQL is used
+     */
+    public function __construct(bool $yql)
     {
         parent::__construct($yql);
     }
-
 
     /**
      * get a list of stocks with symbol and market for provided search string
@@ -31,7 +33,7 @@ class SymbolSuggest extends Query
      * @param string $string - the name/string to search for
      * @return self
      */
-    public function query($queryString)
+    public function query(string $queryString)
     {
         $this->queryString = $queryString;
 
@@ -41,39 +43,100 @@ class SymbolSuggest extends Query
         $lang = 'lang=en-US';
         $this->queryUrl = $this->baseUrl . urlencode($this->queryString) . '&' . $region . '&' . $lang . '&callback=YAHOO.util.ScriptNodeDataSource.callbacks';
 
-        // deprecated
-        // $this->queryUrl = 'http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' . urlencode($this->queryString) . '&callback=YAHOO.Finance.SymbolSuggest.ssCallback';
-
         // curl request
         $this->curlRequest($this->queryUrl);
 
-        if (404 == $this->response['status']) {
-            return $data = [];
+        // handle response
+        if ($this->response['status'] == 200) {
+            $this->handleResponse();
+            return $this;
         }
 
-        // read json
+        $this->handleError();
+        return $this;
+    }
+
+    /**
+     * handle the response if the query was successful
+     * @return self
+     */
+    protected function handleResponse()
+    {
+        // define return array
+        $this->result = [
+                'ok' => true,
+                'meta' => [
+                    'status' => $this->response['status'],
+                    'query' => $this->queryString,
+                ],
+                'data' => []
+        ];
+
+        // read json from response
         $json = preg_replace('/.+?({.+}).+/', '$1', $this->response['result']);
 
         // convert json to array
         $object = json_decode($json);
         $data = $object->ResultSet->Result;
         if ($data) {
+
             $i = 0;
-            $list = array();
+            $list = [];
+
+            //structure of a single data type array
+            $item = [
+                'type' => 'symbols',
+                'id'   => null,
+                'attributes' => [
+                    'symbol' => null,
+                    'name' => null,
+                    'exch' => null,
+                    'exchDisplay' => null,
+                    'type' => null,
+                    'typeDisplay' => null,
+                ]
+            ];
+
             foreach($data as $suggest) {
-                $list[$i]['symbol']     = (empty($suggest->symbol) ? null : $suggest->symbol);
-                $list[$i]['name']       = (empty($suggest->name) ? null : $suggest->name);
-                $list[$i]['exch']       = (empty($suggest->exch) ? null : $suggest->exch);
-                $list[$i]['type']       = (empty($suggest->type) ? null : $suggest->type);
-                $list[$i]['exchDisp']   = (empty($suggest->exchDisp) ? null : $suggest->exchDisp);
-                $list[$i]['typeDisp']   = (empty($suggest->typeDisp) ? null : $suggest->typeDisp);
+                $symbol = $item;
+                $symbol['id'] = $i;
+
+                $symbol['attributes']['symbol']     = (empty($suggest->symbol) ? null : $suggest->symbol);
+                $symbol['attributes']['name']       = (empty($suggest->name) ? null : $suggest->name);
+                $symbol['attributes']['exch']       = (empty($suggest->exch) ? null : $suggest->exch);
+                $symbol['attributes']['type']       = (empty($suggest->type) ? null : $suggest->type);
+                $symbol['attributes']['exchDisplay']   = (empty($suggest->exchDisp) ? null : $suggest->exchDisp);
+                $symbol['attributes']['typeDisplay']   = (empty($suggest->typeDisp) ? null : $suggest->typeDisp);
+
+                $list[] = $symbol;
                 $i++;
             }
-            $this->result = $list;
-        } else {
-            //no data found
-            $this->result = null;
+            // fill data variable of return array
+            $this->result['data'] = $list;
         }
+        return $this;
+    }
+
+    /**
+     * handle the response if the query had errors
+     * @return self
+     */
+    protected function handleError()
+    {
+        // define return array
+        $this->result = [
+                'ok' => false,
+                'meta' => [
+                    'status' => $this->response['status'],
+                    'query' => $this->queryString,
+                ],
+                'errors' => [
+                    'status' => $this->response['status'],
+                    'title' => $this->response['error'],
+                    'detail' => $this->response['errno'],
+                ],
+        ];
+
         return $this;
     }
 }

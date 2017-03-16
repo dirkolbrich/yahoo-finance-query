@@ -4,7 +4,7 @@
  * YahooFinanceQuery - a PHP package to query the Yahoo Finance API
  *
  * @author      Dirk Olbrich <mail@dirkolbrich.de>
- * @copyright   2013-2015 Dirk Olbrich
+ * @copyright   2013-2017 Dirk Olbrich
  * @link        https://github.com/dirkolbrich/YahooFinanceQuery
  * @license     MIT
  * @version     1.0.0
@@ -12,19 +12,50 @@
  */
 
 /**
- * 
+ *
  */
 class Query
 {
+    /**
+     * @var bool
+     */
     protected $yql;
+
+    /**
+     * @var string
+     */
     protected $queryString;
+
+    /**
+     * @var array
+     */
     protected $queryParams;
+
+    /**
+     * @var string
+     */
     protected $baseUrl;
+
+    /**
+     * @var string
+     */
     protected $queryUrl;
+
+    /**
+     * @var string
+     */
     public $result;
+
+    /**
+     * @var array
+     */
     public $response;
 
-    function __construct($yql)
+    /**
+     * constructor with $yql param
+     * @param bool $yql - setting if YQL is used
+     */
+    function __construct(bool $yql)
     {
         $this->yql = $yql;
     }
@@ -35,10 +66,10 @@ class Query
     *   @param string $url
     *   @return array $response
     */
-    protected function curlRequest($url)
+    protected function curlRequest(string $url)
     {
-        $response = array();
-            
+        $response = [];
+
         // check for config setting of CURLOPT_USERAGENT in $this->config, else set to NULL
         $userAgent = @($this->config['userAgent'] ?: $_SERVER["HTTP_USER_AGENT"] ?: null);
 
