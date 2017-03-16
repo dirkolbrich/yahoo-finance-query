@@ -1,5 +1,23 @@
 ### Changelog
 
+- 1.0.5 (2015-10-26)
+    * fixed indexList() screen scrapper to underlying Yahoo website, this uses React now, closes #16 and #17
+    * fix function accessor
+    * add doc
+    * format code PSR2
+
+- 1.0.4 (2016-10-16)
+    * fixed type hinting in quote() if no $param Array is given 
+
+- 1.0.3 (2016-10-06)
+    * updated query url for symbolSuggest(), due to changes in Yahoo query string
+
+- 1.0.2 (2015-09-28)
+    * validate symbol and response in quotes() 
+
+- 1.0.1 (2015-09-28)
+    * validate symbol and response in historicalQuotes()
+ 
 - 1.0.0 (2015-09-28)
     * fixed some broken method, partially with custom screen scrapper
     * reorganisation of classes, `YahooFinanceQuery.php` functions as a controller/router class, each method has its own underlying class
