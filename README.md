@@ -1,22 +1,22 @@
-## YahooFinanceQuery
+# YahooFinanceQuery
 
 A PHP class to query the Yahoo Finance API.
 
-### Features
+## Features
 
-- search for symbol via Yahoo.Finance.Symbol.AutoSuggest
-- query current quotes for symbols
-- query historical quotes for single symbol
-- query intraday quotes for single symbol
-- query basic stock info
-- query list of related stocks for index symbols
-- query full list of sectors with related industries
+- [symbolSuggest()](#symbol-suggest) - search for symbol via Yahoo.Finance.Symbol.AutoSuggest
+- [quote()](#quote) - query current quotes for symbols
+- [historicalQuote()](#historical-quote) - query historical quotes for single symbol
+- [intraDay()](#intra-day) - query intraday quotes for single symbol
+- [stockInfo()](#stock-info) - query basic stock info
+- [indexList()](#index-list) - query list of related stocks for index symbols
+- [sectorList()](#sector-list) - query full list of sectors with related industries
 
-### Example
+## Example
 
 You can test an example.php at http://code.dirkolbrich.de/YahooFinanceQuery/
 
-### Installation
+## Installation
 
 require via `composer.json` in your project root
 ```json
@@ -27,7 +27,7 @@ require via `composer.json` in your project root
 }
 ```
 
-### Implementation
+## Implementation
 
 As simple as that:
 ```php
@@ -43,7 +43,7 @@ use YahooFinanceQuery\YahooFinanceQuery;
 YahooFinanceQuery->make();
 ```
 
-### Configuration
+## Configuration
 
 YahooFinanceQuery can be configured to return the data as an array or the raw json. Default `returnType` is `array`.
 
@@ -69,7 +69,7 @@ The current config setting can be retrieved with:
 $query->getConfig();
 ```
 
-### Usage
+## Usage
 
 To retrieve the results simple call the appropiate method.
 ```php
@@ -93,143 +93,182 @@ $query->yql()->method();
 
 The following query methods are available:
 
-1. `symbolSuggest($string)`
+## Methods
 
-    Query for a symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback
-    ```php
-    $string = 'basf';
-    $data = $query->symbolSuggest($string);
-    ```
+<a name="symbol-suggest"></a>
+### `symbolSuggest($string)`
 
-    Returns a formated array:
-    ```php
-    array[
-        'ok' => true,
+Query for a symbol suggestion via the YAHOO.Finance.SymbolSuggest.ssCallback
+
+```php
+$string = 'basf';
+$data = $query->symbolSuggest($string);
+```
+
+Returns a formated array:
+```php
+array[
+    'ok' => true,
+    'meta' => array[
         'status' => 200,
         'query' => 'basf',
-        'symbols' => array[
-            0 => object[
+    ],
+    'data' => array[
+        0 => array[
+            'type' => 'symbols',
+            'id' => 1,
+            'attributes' => array[
                 'symbol' => 'BAS.DE',
                 'name' => 'BASF SE',
                 'exch' => 'GER',
                 'type' => 'S',
                 'exchDisp' => 'XETRA',
-                'typeDisp' => 'Equity',
-            ],
-            // any number of following results
-    ];
-    ```
+                'typeDisp' => 'Equity'
+            ]
+        ],
+        // any number of following results            
+    ]
+];
+```
 
-    If no symbol is found, the query will return a 404 error:
-    ```php
-    array[
-        'ok' => false,
+If no symbol is found but the query was vald, the query will return an empty `data` array:
+```php
+array[
+    'ok' => true,
+    'meta' => array[
+        'status' => 200,
+        'query' => 'basf'
+    ],
+    'data' => array[],
+];
+```
+
+If the query was invalid, the query will return a 404 error:
+```php
+array[
+    'ok' => false,
+    'meta' => array[
         'status' => 404,
-        'error' => 'Could not find symbol for "basf"',
-    ];
-    ```
+        'query' => 'basf'
+    ],
+    'errors' => array[
+        'status' => 404,
+        'title' =>  'Recource not found'
+        'details' => 'Could not find symbol for "basf"'
+    ],
+];
+```
 
-2. `quote(array $symbol [, array $params])`
+<a name="quote"></a>
+### `quote(array $symbol [, array $params])`
 
-    Query for current quote for given symbols and given parameters.
+Query for a current quote for the given symbols and given parameters.
 
-    The passed parameter `$symbol` must be an array. Several symbols can be passed.
+The passed parameter `$symbol` must be an array. Multiple symbols can be combinde and passed together.
 
-    The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See the `$quoteParams` variable in the class definition as reference . If `$params` is empty, the query will use all possible params.
+The passed parameter `$params` is optional and must be an array too. It accepts the parameters as a written word or as tags. See the `$quoteParams` variable in the class definition as reference. If `$params` is empty, the query will use all possible params.
 
-    The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.
+The params 'Symbol', 'LastTradeTime' and 'LastTradeDate' will be quered by default. There will be a unified UTC 'LastTradeTimestamp' added to the result array.
 
-    ```php
-    $symbol = array('bas.de');
-    $params = array('LastTradePriceOnly', 'x', 'c1');
-    $data = $query->quote($symbol, $params);
-    ```
+```php
+$symbol = array('bas.de');
+$params = array('LastTradePriceOnly', 'x', 'c1');
+$data = $query->quote($symbol, $params);
+```
 
-3. `historicalQuote(array $symbol [, $startDate, $endDate, $param])`
+<a name="historical-quote"></a>
+### `historicalQuote(array $symbol [, $startDate, $endDate, $param])`
 
-    Query for historical quotes for given symbol with given start date and end date.
+Query for historical quotes for given symbol with given start date and end date.
 
-    Only one `$symbol` can be passed per query and must be a string.
+Only one `$symbol` can be passed per query and must be a string.
 
-    `$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes. If only one date is passed, the other one will be set to the maximum available.
+`$startDate` and `$endDate` must be in the format YYYY-MM-DD. If no dates are passed, the query will grab all available historical quotes. If only one date is passed, the other one will be set to the maximum available.
 
-    `$param` is set to default `d` = daily. See `$historicalQuoteParams` variable for other options.
+`$param` is set to default `d` = daily. See `$historicalQuoteParams` variable for other options.
 
-    ```php
-    $symbol = array('bas.de');
-    $startDate = 2013-07-26;
-    $endDate = 2014-01-06;
-    $param = 'd';
-    $data = $query->historicalQuote($symbol, $startDate, $endDate, $param);
-    ```
-    I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible via YQL.
+```php
+$symbol = array('bas.de');
+$startDate = 2013-07-26;
+$endDate = 2014-01-06;
+$param = 'd';
+$data = $query->historicalQuote($symbol, $startDate, $endDate, $param);
+```
+I recommend not to use the `yql()` method with historical quotes, as the YQL console permits only up to 365 single result quotes. To retrieve a full set of historical quotes will not be possible via YQL.
 
-4. `intraDay($symbol [, $period, $param])`
+<a name="intra-day"></a>
+### `intraDay($symbol [, $period, $param])`
 
-    Query finance.yahoo.com for intraday quotes. The symbol must be passed as as string.
+Query finance.yahoo.com for intraday quotes. The symbol must be passed as as string.
 
-    `$period` is optional and default set to `1d`. It is possible to retrieve intraday quotes for up to the last 15 days.
+`$period` is optional and default set to `1d`. It is possible to retrieve intraday quotes for up to the last 15 days.
 
-    `$param` is optional and default set to `quote`. For other options see the `$intraDayParams` variable.
+`$param` is optional and default set to `quote`. For other options see the `$intraDayParams` variable.
 
-    ```php
-    $symbol = 'bas.de';
-    $period = '5d';
-    $data = $query->intraDay($symbol, $period);
-    ```
+```php
+$symbol = 'bas.de';
+$period = '5d';
+$data = $query->intraDay($symbol, $period);
+```
 
-5. `stockInfo($symbol)`
+<a name="stock-info"></a>
+### `stockInfo($symbol)`
 
-    Query finance.yahoo.com for basic stock information. The symbol must be passed as as string.
+Query finance.yahoo.com for basic stock information. The symbol must be passed as as string.
 
-    ```php
-    $symbol = 'bas.de';
-    $data = $query->stockInfo($symbol);
-    ```
+```php
+$symbol = 'bas.de';
+$data = $query->stockInfo($symbol);
+```
 
-6. `indexList(array $symbol)`
+<a name="index-list"></a>
+### `indexList(array $symbol)`
 
-    Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array.
+Query for an index which returns the symbol and name of the components. Several symbols may be passed as an array.
 
-    See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
+See http://finance.yahoo.com/intlindices?e=europe for more symbols to world indices. The caret `^` character must be part of the symbol.
 
-    ```php
-    $symbol = array('^GDAXI');
-    $data = $query->indexList($symbol);
-    ```
+```php
+$symbol = array('^GDAXI');
+$data = $query->indexList($symbol);
+```
 
-7. `sectorList()`
+<a name="sector-list"></a>
+### `sectorList()`
 
-    Query for a complete list of sectors and their corresponding industries.
+Query for a complete list of sectors and their corresponding industries.
 
-    This function is static without any params.
+This function is static without any params.
 
-    ```php
-    $data = $query->sectorList();
-    ```
+```php
+$data = $query->sectorList();
+```
 
-    Which returns an array in this form:
+Which returns an array in this form:
 
-    ```php
-    Array (
-        [0] => Array (
-            [name] => Basic Materials
-            [industries] => Array (
-                [0] => Array (
-                    [name] => Agricultural Chemicals
-                    [id] => 112 )
-                [1] => Array (
-                    [name] => Aluminum
-                    [id] => 132 )
-                ... )
-            )
-        [1] => Array (
-            [name] => Conglomerates
-            [industries] => Array ( ... )
-            ) 
-    ```
+```php
+array[
+    0 => array[
+        'name' => 'Basic Materials',
+        'industries' => array[
+            0 => array[
+                'name' => 'Agricultural Chemicals',
+                'id' => 112
+                ],
+            1 => array[
+                'name' => 'Aluminum'
+                'id' => 132
+                ],
+        ],
+    ],
+    1 => array[
+        'name' => 'Conglomerates',
+        'industries' => array[...],
+    ],
+];
+```
 
-### Recources
+## Recources
 
 Some informative blog post and websites:
 
