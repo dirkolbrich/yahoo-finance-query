@@ -1,3 +1,13 @@
+*For your Information: This is an ***abandoned*** project.*
+
+*As with Yahoo's latest API change (March 2017), and while I am moving more and more to Golang, I will no longer maintain this PHP package. Feel free to fork and make your own adjustments.*
+
+*Thank you for your interest. I'll leave this files permanently for your and my documentation. The public available code example on my own webspace will be terminated.*
+
+*My personal special ***Thank You*** goes to all contributors. You tought me a lot.*
+
+---
+
 ## YahooFinanceQuery
 
 A PHP class to query the Yahoo Finance API.
@@ -14,7 +24,7 @@ A PHP class to query the Yahoo Finance API.
 
 ### Example
 
-You can test an example.php at http://code.dirkolbrich.de/YahooFinanceQuery/
+You can find an example.php file under `/example`.
 
 ### Installation
 
@@ -193,7 +203,8 @@ The following query methods are available:
         [1] => Array (
             [name] => Conglomerates
             [industries] => Array ( ... )
-            ) 
+            )
+    )
     ```
 
 ### Recources
