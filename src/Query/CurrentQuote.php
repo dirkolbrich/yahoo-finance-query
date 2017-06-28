@@ -35,6 +35,7 @@ class CurrentQuote extends Query
         'c'  => 'Change_PercentChange',
         'c1' => 'Change',
         'c3' => 'Commission',
+        'c4' => 'Currency',
         'c6' => 'ChangeRealtime',
         'c8' => 'AfterHoursChangeRealtime',
         'd'  => 'DividendShare',
@@ -142,7 +143,7 @@ class CurrentQuote extends Query
         // add unix timestamp and UTC time
         foreach ($data as &$dataSet) {
             $timeString = null;
-            if ($dataSet['LastTradeTime'] != "N/A" && $dataSet['LastTradeDate'] != "N/A") {
+            if (isset($dataSet['LastTradeTime']) && $dataSet['LastTradeTime'] != "N/A" && $dataSet['LastTradeDate'] != "N/A") {
                 $time       = $dataSet['LastTradeTime'];
                 $date       = $dataSet['LastTradeDate'];
                 $timeString = $time . ' ' . $date;
